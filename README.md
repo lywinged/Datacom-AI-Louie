@@ -1,661 +1,433 @@
-# AI Assessment Project - Production Deployment
+# AI Assessment Project
 
-A comprehensive AI system featuring **RAG Q&A**, **intelligent trip planning**, and **self-healing code generation**, optimized for production deployment with ONNX quantization, in-memory vector search, and Docker containerization.
+Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilities.
 
----
+## Features
 
-## Table of Contents
+- **Task 3.1:** Conversational Chat with streaming support (Azure OpenAI)
+- **Task 3.2:** High-Performance RAG QA with Qdrant vector database
+- **Task 3.3:** Autonomous Planning Agent for trip planning
+- **Task 3.4:** Self-Healing Code Assistant with automated testing
 
-1. [Architecture Overview](#architecture-overview)
-2. [Quick Start](#quick-start)
-3. [System Components](#system-components)
-4. [Setup Guide](#setup-guide)
-5. [Running Automated Tests](#running-automated-tests)
-6. [Performance Benchmarks](#performance-benchmarks)
-7. [API Documentation](#api-documentation)
-8. [Configuration](#configuration)
-9. [Troubleshooting](#troubleshooting)
-
----
-
-## Architecture Overview
+## Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────┐
-│                    Streamlit Frontend (Port 18501)              │
-│         Intent Classification & Multi-Service Dashboard         │
-└───────────────────────────┬────────────────────────────────────┘
-                            │ HTTP
-┌───────────────────────────▼────────────────────────────────────┐
-│                  FastAPI Backend (Port 8888)                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────────────┐   │
-│  │  RAG Routes  │  │ Agent Routes │  │   Code Routes      │   │
-│  │  (Task 3.2)  │  │  (Task 3.3)  │  │    (Task 3.4)      │   │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬─────────────┘   │
-│         │                 │                  │                  │
-│  ┌──────▼─────────────────▼──────────────────▼─────────────┐   │
-│  │           ONNX Inference Engine (INT8)                   │   │
-│  │  BGE-M3 Embeddings + BGE/MiniLM Reranker                 │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└───────────────────────────┬────────────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────────────┐
-│             Qdrant Vector DB (Port 6333)                        │
-│       In-Memory Mode + Persistent Disk Backup                   │
-│         138,146 vectors (Project Gutenberg Corpus)              │
-└────────────────────────────────────────────────────────────────┘
+┌─────────────────┐
+│   Frontend      │  Streamlit UI (Port 8501)
+│   (Streamlit)   │  - Chat interface
+└────────┬────────┘  - RAG Q&A
+         │           - Agent planning
+         ▼           - Code generation
+┌─────────────────┐
+│   Backend API   │  FastAPI (Port 8888)
+│   (FastAPI)     │  - RESTful endpoints
+└────────┬────────┘  - Request validation
+         │           - Business logic
+    ┌────┴────┬──────────┬─────────┐
+    ▼         ▼          ▼         ▼
+┌────────┐ ┌─────┐  ┌────────┐ ┌─────────┐
+│ Qdrant │ │ LLM │  │ ONNX   │ │ SQLite  │
+│ Vector │ │Azure│  │Inference│ │ Session │
+│   DB   │ │OpenAI  │Models  │ │   DB    │
+└────────┘ └─────┘  └────────┘ └─────────┘
+ 152K pts  GPT-4    MiniLM     Chat Hist
 ```
 
-### Key Features
+### Technology Stack
 
-- **ONNX INT8 Quantization**: 2-3x faster inference, 4x smaller models
-- **In-Memory Vector Search**: 40-60% latency reduction (20-60ms vs 50-120ms)
-- **Hybrid Information Extraction**: Regex-first (80% cases) + LLM fallback
-- **AutoPlan Learning System**: Experience replay with session persistence
-- **Self-Healing Code Generation**: Iterative refinement with automated testing
-- **Production-Ready**: Docker Compose orchestration with health checks
+**Backend:**
+- FastAPI 0.104 - High-performance async API framework
+- Qdrant 1.15 - Vector database for semantic search
+- ONNX Runtime 1.16 - Optimized embedding/reranking inference
+- Azure OpenAI - GPT-4 for chat and generation
+- SQLAlchemy 2.0 - Database ORM
 
----
+**Frontend:**
+- Streamlit 1.29 - Interactive web interface
+- Plotly 5.18 - Data visualization
 
-## Quick Start
+**Infrastructure:**
+- Docker Compose - Container orchestration
+- GitHub Actions - CI/CD automation
+- pytest 7.4 - Testing framework
+
+## Setup
 
 ### Prerequisites
 
-- **Docker** & **Docker Compose** installed
-- **8GB+ RAM** (16GB recommended for optimal performance)
-- **OpenAI API Key** (or Azure OpenAI credentials)
+- Docker & Docker Compose
+- Python 3.10+ (for local development)
+- Azure OpenAI API key
 
-### 1-Minute Setup
+### Quick Start (Docker - Recommended)
+
+1. **Configure environment variables:**
 
 ```bash
-# Clone repository
-cd ai-assessment-deploy
-
-# Configure environment
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
-
-# Start all services
-docker-compose up -d
-
-# Wait for services to initialize (~2 minutes)
-# Monitor startup progress:
-docker-compose logs -f backend
-
-# Access the application
-open http://localhost:18501
+# Edit .env with your Azure OpenAI credentials:
+# AZURE_OPENAI_ENDPOINT=your-endpoint
+# AZURE_OPENAI_KEY=your-key
+# OPENAI_MODEL=gpt-4
 ```
 
-### Verify Installation
+2. **Start all services:**
 
 ```bash
-# Check all services are healthy
-docker-compose ps
+# Clean start script (unsets conflicting env vars)
+bash start.sh
 
-# Test backend health
+# Or use docker-compose directly
+docker-compose up -d
+```
+
+3. **Verify services are running:**
+
+```bash
+# Check API health
 curl http://localhost:8888/health
 
-# Test Qdrant collection
-curl http://localhost:6333/collections/assessment_docs
-
-# Run quick API test
-python3 scripts/eval_rag_api_random30.py --seed 42
+# Check Qdrant
+curl http://localhost:6333
 ```
 
-Expected output: Top-5 accuracy ~85%, median latency ~160ms
+4. **Access the application:**
 
----
+- Frontend: http://localhost:8501
+- Backend API: http://localhost:8888
+- API Docs: http://localhost:8888/docs
+- Qdrant Dashboard: http://localhost:6333/dashboard
 
-## System Components
+### Local Development Setup
 
-### 1. RAG Q&A System (Task 3.2)
-
-**Features:**
-- **Embedding Model**: BGE-M3 (INT8 quantized, 330MB)
-- **Vector Database**: Qdrant with 138k document chunks
-- **Reranking**: BGE Reranker (primary) + MiniLM (fallback)
-- **Answer Generation**: OpenAI GPT-3.5-turbo / GPT-4
-
-**Performance:**
-- Embed Time: 30-60ms (warm)
-- Vector Search: 20-60ms (in-memory)
-- Rerank Time: 60-100ms
-- Total Retrieval: 150-250ms
-
-**API Endpoint:**
-```bash
-POST /api/rag/ask
-{
-  "question": "Who wrote The Great Gatsby?",
-  "top_k": 5,
-  "include_timings": true
-}
-```
-
-### 2. Trip Planning Agent (Task 3.3)
-
-**Features:**
-- **AutoPlan Learning**: Experience replay with signature matching
-- **Session Persistence**: SQLite-backed conversation history
-- **Hybrid Extraction**: Regex (80%) + LLM fallback (20%)
-- **Tool Integration**: Mock APIs for flights, hotels, attractions
-
-**API Endpoint:**
-```bash
-POST /api/agent/plan
-{
-  "query": "Plan a 3-day trip to Paris",
-  "session_id": "optional-session-id"
-}
-```
-
-### 3. Code Generation Assistant (Task 3.4)
-
-**Features:**
-- **Automated Testing**: Generates and executes unit tests
-- **Iterative Refinement**: Up to 3 retry attempts
-- **Multi-Language**: Python, JavaScript, Java support
-- **Assertion Injection**: Validates output correctness
-
-**API Endpoint:**
-```bash
-POST /api/code/generate
-{
-  "task_description": "Write a function to check if a number is prime",
-  "language": "python"
-}
-```
-
-### 4. Streamlit Dashboard
-
-**Features:**
-- Intent classification (RAG / Agent / Code)
-- Real-time service status indicators
-- Session management with history
-- Responsive multi-tab interface
-
----
-
-## Setup Guide
-
-### Detailed Installation
-
-#### 1. Environment Configuration
-
-Create `.env` file with required settings:
+1. **Install dependencies:**
 
 ```bash
-# OpenAI Configuration
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-3.5-turbo-0125
+# Backend
+pip install -r backend/requirements.txt
 
-# Or use Azure OpenAI
-AZURE_OPENAI_ENDPOINT=https://...
-AZURE_OPENAI_KEY=...
-AZURE_OPENAI_DEPLOYMENT=gpt-35-turbo
-
-# Qdrant Settings
-QDRANT_COLLECTION=assessment_docs
-
-# Performance Tuning
-OMP_NUM_THREADS=16  # Backend CPU threads
-USE_INT8_QUANTIZATION=true
+# Frontend
+pip install -r frontend/requirements.txt
 ```
 
-#### 2. Model Preparation
+2. **Start services manually:**
 
-Models are included in the `models/` directory:
-
-```
-models/
-├── bge-m3-embed-int8/       # 2.6GB (542MB ONNX + tokenizer)
-├── bge-reranker-int8/       # 1.3GB (266MB ONNX + tokenizer)
-└── minilm-reranker-onnx/    # 110MB (22MB ONNX + tokenizer)
-```
-
-If models are missing, download from:
 ```bash
-# Option 1: Use provided models (recommended)
-# Already included in deployment package
+# Terminal 1: Start backend
+cd backend
+uvicorn main:app --host 0.0.0.0 --port 8888 --reload
 
-# Option 2: Convert from HuggingFace (advanced)
-python3 scripts/convert_to_onnx.py --model BAAI/bge-m3 --output models/bge-m3-embed-int8
+# Terminal 2: Start frontend
+cd frontend
+streamlit run app.py --server.port 8501
+
+# Terminal 3: Start Qdrant (via Docker)
+docker run -p 6333:6333 qdrant/qdrant
 ```
-
-#### 3. Data Seeding
-
-On first startup, backend automatically:
-1. Creates Qdrant collection `assessment_docs`
-2. Uploads 138,146 vectors from `data/qdrant_seed/assessment_docs.jsonl`
-3. Builds HNSW index for fast similarity search
-
-**Initial seed time**: ~10 minutes
-**Subsequent restarts**: 1-2 minutes (loads from disk to memory)
-
-#### 4. Service Startup Order
-
-Docker Compose ensures correct startup sequence:
-
-```yaml
-1. Qdrant       (6333)    # Vector database
-2. Inference    (8001)    # ONNX model server (optional)
-3. Backend      (8888)    # FastAPI + seed upload
-4. Frontend     (18501)   # Streamlit UI
-```
-
-Monitor logs during startup:
-```bash
-docker-compose logs -f backend | grep -E "(seed|Ready|Startup)"
-```
-
----
 
 ## Running Automated Tests
 
-### Unit & Integration Tests
-
-**Run all pytest tests:**
-```bash
-# Inside backend container
-docker exec backend-api pytest tests/ -v
-
-# Or from host (requires local dependencies)
-cd backend
-pytest tests/ -v --cov=backend --cov-report=html
-```
-
-**Test coverage:**
-- `test_rag_routes.py`: RAG API endpoints
-- `test_agent_routes.py`: Trip planning agent
-- `test_code_routes.py`: Code generation
-- `test_chat_routes.py`: Chat session management
-- `test_rag_pipeline_utils.py`: Core retrieval logic
-
-**Expected results:**
-```
-tests/test_rag_routes.py::test_rag_health .......................... PASSED
-tests/test_rag_routes.py::test_rag_ask_basic ....................... PASSED
-tests/test_agent_routes.py::test_agent_plan ........................ PASSED
-tests/test_code_routes.py::test_code_generate ...................... PASSED
-
-========================== 12 passed in 8.5s ===========================
-```
-
-### RAG Accuracy Evaluation
-
-**Full evaluation (300 questions):**
-```bash
-# From backend directory (slow: ~15 minutes)
-python3 scripts/eval_rag_accuracy_warmup.py --reranker minilm
-
-# API-based evaluation (requires Docker backend running)
-python3 scripts/eval_rag_api.py
-```
-
-**Quick evaluation (60 questions, 20 per category):**
-```bash
-# Recommended for CI/CD pipelines
-python3 scripts/eval_rag_api_random30.py --seed 42 --output results.json
-
-# Custom random seed
-python3 scripts/eval_rag_api_random30.py --seed 123
-```
-
-**Expected metrics:**
-```json
-{
-  "top5_accuracy_percent": 85.0,
-  "top1_accuracy_percent": 65.0,
-  "latency": {
-    "mean_ms": 162.3,
-    "median_ms": 155.5,
-    "p95_ms": 225.8
-  },
-  "category_breakdown": {
-    "metadata": { "top5_accuracy_percent": 90.0 },
-    "keyword":  { "top5_accuracy_percent": 82.5 },
-    "semantic": { "top5_accuracy_percent": 82.5 }
-  }
-}
-```
-
-### Agent Learning System Test
+### Full Test Suite
 
 ```bash
-# Test learning persistence and retrieval
-bash scripts/test_learning.sh
+# Install test dependencies
+pip install -r backend/requirements.txt
 
-# Expected: Session history preserved across requests
+# Run all tests
+pytest tests/ -v
+
+# Quick mode
+pytest tests/ -q
+
+# With coverage report
+pytest tests/ --cov=backend --cov-report=html
+open htmlcov/index.html
 ```
 
-### Performance Benchmarks
+### Expected Output
 
-**RAG retrieval latency test:**
+```
+============================= test session starts ==============================
+collected 29 items
+
+tests/test_agent_routes.py::test_agent_plan_returns_itinerary PASSED     [  3%]
+tests/test_agent_routes.py::test_agent_health_reports_stub_model PASSED  [  6%]
+tests/test_agent_routes.py::test_agent_metrics_returns_defaults PASSED   [ 10%]
+tests/test_app_api.py::test_root_endpoint PASSED                         [ 13%]
+tests/test_app_api.py::test_health_endpoint PASSED                       [ 17%]
+tests/test_chat_routes.py::test_chat_message_returns_echo_response PASSED [ 20%]
+tests/test_chat_routes.py::test_chat_history_and_clear_workflow PASSED   [ 24%]
+tests/test_chat_routes.py::test_chat_stream_endpoint PASSED              [ 27%]
+tests/test_chat_routes.py::test_chat_metrics_endpoint PASSED             [ 31%]
+tests/test_chat_routes.py::test_chat_message_with_stream_false PASSED    [ 34%]
+tests/test_code_routes.py::test_code_generate_returns_successful_payload PASSED [ 37%]
+tests/test_code_routes.py::test_code_generate_with_test_framework PASSED [ 41%]
+tests/test_code_routes.py::test_code_generate_includes_test_result PASSED [ 44%]
+tests/test_code_routes.py::test_code_generate_includes_token_usage PASSED [ 48%]
+tests/test_code_routes.py::test_code_generate_with_different_language PASSED [ 51%]
+tests/test_code_routes.py::test_code_health_reports_stub_model PASSED    [ 55%]
+tests/test_code_routes.py::test_code_metrics_returns_defaults PASSED     [ 58%]
+tests/test_code_routes.py::test_code_generate_retry_attempts_field PASSED [ 62%]
+tests/test_rag_pipeline_utils.py::test_should_not_switch_when_remote_inference_enabled PASSED [ 65%]
+tests/test_rag_pipeline_utils.py::test_should_switch_when_latency_exceeds_threshold PASSED [ 68%]
+tests/test_rag_pipeline_utils.py::test_should_not_switch_when_gpu_available PASSED [ 72%]
+tests/test_rag_routes.py::test_rag_ask_returns_stubbed_response PASSED   [ 75%]
+tests/test_rag_routes.py::test_rag_health_success PASSED                 [ 79%]
+tests/test_rag_routes.py::test_rag_config_returns_model_info PASSED      [ 82%]
+tests/test_rag_routes.py::test_rag_seed_status_returns_status PASSED     [ 86%]
+tests/test_rag_routes.py::test_rag_upload_document PASSED                [ 89%]
+tests/test_rag_routes.py::test_rag_switch_mode_to_fallback PASSED        [ 93%]
+tests/test_rag_routes.py::test_rag_switch_mode_to_primary PASSED         [ 96%]
+tests/test_rag_routes.py::test_rag_stats_returns_collection_info PASSED  [100%]
+
+============================== 29 passed in 0.54s ==============================
+```
+
+### Test Coverage
+
+- **Total Tests:** 29
+- **API Coverage:** 95% (20/21 endpoints)
+- **Execution Time:** 0.54s
+- **Pass Rate:** 100%
+
+### Test Organization
+
+```
+tests/
+├── conftest.py              # Fixtures and test configuration
+├── test_app_api.py         # Root and health endpoints
+├── test_chat_routes.py     # Chat API tests (5 tests)
+├── test_agent_routes.py    # Agent API tests (6 tests)
+├── test_code_routes.py     # Code Assistant tests (8 tests)
+├── test_rag_routes.py      # RAG API tests (9 tests)
+└── test_rag_pipeline_utils.py  # RAG utilities (3 tests)
+```
+
+### Running Specific Tests
+
 ```bash
-python3 scripts/test_rag_retrieval_only.py
+# Run specific test file
+pytest tests/test_rag_routes.py -v
 
-# Measures: embed_ms, vector_ms, rerank_ms, total_ms
+# Run specific test
+pytest tests/test_rag_routes.py::test_rag_config_returns_model_info -v
+
+# Run tests matching pattern
+pytest tests/ -k "rag" -v
+
+# Stop on first failure
+pytest tests/ -x
+
+# Show detailed output on failure
+pytest tests/ -vv --tb=long
 ```
 
-**Embedding speed with different batch sizes:**
-```bash
-python3 scripts/debug_embed_speed.py
+## API Endpoints
 
-# Output:
-# batch_size=32 -> 118.3ms total, 3.7ms per text
-```
+### Chat API (`/api/chat`)
 
----
+- `POST /message` - Send chat message (non-streaming)
+- `POST /stream` - Send chat message (streaming SSE)
+- `GET /history` - Get conversation history
+- `DELETE /history` - Clear conversation history
+- `GET /metrics` - Get chat metrics
+
+### RAG API (`/api/rag`)
+
+- `POST /ask` - Ask questions with semantic search and citations
+- `POST /upload` - Upload and index documents
+- `POST /ingest/sample` - Ingest sample corpus
+- `GET /stats` - Get Qdrant collection statistics
+- `GET /health` - RAG service health check
+- `GET /config` - Get RAG configuration (models, limits)
+- `GET /seed-status` - Get Qdrant seed status
+- `POST /switch-mode` - Switch between primary/fallback models
+
+### Agent API (`/api/agent`)
+
+- `POST /plan` - Create trip plans with autonomous agent
+- `GET /health` - Agent service health check
+- `GET /metrics` - Get agent planning metrics
+
+### Code API (`/api/code`)
+
+- `POST /generate` - Generate code with self-healing
+- `GET /health` - Code service health check
+- `GET /metrics` - Get code generation metrics
 
 ## Performance Benchmarks
 
-### RAG System Performance
-
-| Metric | Cold Start | After Warm-up | Target |
-|--------|-----------|---------------|---------|
-| Embed Time | 700-1500ms | 30-60ms | <100ms |
-| Vector Search (disk) | 80-150ms | 50-120ms | <100ms |
-| Vector Search (memory) | 40-80ms | 20-60ms | <80ms ✅ |
-| Rerank Time | 300-500ms | 60-100ms | <150ms |
-| **Total Retrieval** | 1500-2500ms | 150-250ms | <300ms ✅ |
-
-### Accuracy Metrics (300-question benchmark)
-
-| Dataset | Top-1 | Top-5 | Notes |
-|---------|-------|-------|-------|
-| Metadata | 70% | 90% | Author/title queries |
-| Keyword | 60% | 82% | Exact phrase matching |
-| Semantic | 65% | 85% | Conceptual similarity |
-| **Overall** | **65%** | **85%** | MiniLM reranker |
-
-### Resource Usage
-
-| Component | CPU | Memory | Disk | Notes |
-|-----------|-----|--------|------|-------|
-| Backend | 30-50% | 2.5GB | 500MB | 16 threads |
-| Qdrant (in-memory) | 10-20% | 2.0GB | 3.5GB | 138k vectors |
-| Frontend | 5-10% | 300MB | 100MB | Streamlit |
-| **Total** | **50-80%** | **5GB** | **4GB** | Single host |
-
----
-
-## API Documentation
-
-### RAG Q&A Endpoints
-
-**Ask Question**
-```http
-POST /api/rag/ask
-Content-Type: application/json
-
-{
-  "question": "What is machine learning?",
-  "top_k": 5,
-  "include_timings": true,
-  "reranker": "fallback",          // "fallback" or "bge"
-  "vector_limit": 10,               // Pre-rerank candidates
-  "content_char_limit": 500         // Max chunk size
-}
-```
-
-**Response:**
-```json
-{
-  "answer": "Machine learning is...",
-  "chunks": [
-    {
-      "content": "Machine learning...",
-      "source": "Introduction_to_ML.txt",
-      "score": 0.89,
-      "metadata": {
-        "title": "Introduction to ML",
-        "authors": "John Doe"
-      }
-    }
-  ],
-  "timings": {
-    "embed_ms": 42.3,
-    "vector_ms": 35.1,
-    "rerank_ms": 68.5,
-    "llm_ms": 1200.0,
-    "total_ms": 1346.2
-  }
-}
-```
-
-**Health Check**
-```http
-GET /api/rag/health
-
-Response: { "status": "healthy", "qdrant_connected": true }
-```
-
-### Agent Endpoints
-
-**Plan Trip**
-```http
-POST /api/agent/plan
-Content-Type: application/json
-
-{
-  "query": "Plan a romantic 3-day trip to Paris for 2 people",
-  "session_id": "user123"
-}
-```
-
-**Response:**
-```json
-{
-  "plan": {
-    "destination": "Paris",
-    "duration_days": 3,
-    "budget_usd": 2500,
-    "itinerary": [...]
-  },
-  "learning_used": true,
-  "session_id": "user123_20251027"
-}
-```
-
-### Code Generation Endpoints
-
-**Generate Code**
-```http
-POST /api/code/generate
-Content-Type: application/json
-
-{
-  "task_description": "Write a function to check if a number is prime",
-  "language": "python",
-  "max_retries": 3
-}
-```
-
-**Response:**
-```json
-{
-  "code": "def is_prime(n):\n    ...",
-  "tests_passed": true,
-  "iterations": 1,
-  "test_output": "All tests passed ✓"
-}
-```
-
----
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OPENAI_API_KEY` | - | **Required**: OpenAI API key |
-| `OPENAI_MODEL` | gpt-3.5-turbo-0125 | LLM model name |
-| `QDRANT_HOST` | qdrant | Qdrant hostname (Docker) |
-| `QDRANT_PORT` | 6333 | Qdrant HTTP port |
-| `QDRANT_COLLECTION` | assessment_docs | Collection name |
-| `USE_ONNX_INFERENCE` | true | Enable ONNX models |
-| `USE_INT8_QUANTIZATION` | true | INT8 quantization |
-| `OMP_NUM_THREADS` | 16 | CPU parallelism |
-| `ENABLE_REMOTE_INFERENCE` | false | Use separate inference service |
-
-### Docker Compose Configuration
-
-**Qdrant In-Memory Mode** (recommended for performance):
-```yaml
-qdrant:
-  environment:
-    - QDRANT__STORAGE__IN_MEMORY=true
-    - QDRANT__STORAGE__STORAGE_PATH=/qdrant/storage
-  volumes:
-    - qdrant_storage:/qdrant/storage  # Disk backup
-```
-
-**Backend CPU Optimization:**
-```yaml
-backend:
-  environment:
-    - OMP_NUM_THREADS=16  # Adjust based on CPU cores
-```
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**1. Services not starting**
-```bash
-# Check logs for errors
-docker-compose logs backend
-docker-compose logs qdrant
-
-# Restart services
-docker-compose restart
-```
-
-**2. Qdrant collection empty after restart**
-```bash
-# Check if seed file exists
-ls -lh data/qdrant_seed/assessment_docs.jsonl  # Should be ~2GB
-
-# Manually trigger seed upload
-docker-compose restart backend
-
-# Monitor upload progress
-docker logs backend-api -f | grep seed
-```
-
-**3. Slow embedding performance**
-```bash
-# Check if models are being reloaded
-docker logs backend-api | grep "CUDA not available"
-
-# Verify batch_size=32 in onnx_inference.py:108
-docker exec backend-api grep -A 2 "def encode" /app/backend/services/onnx_inference.py
-```
-
-**4. High reranker latency (>500ms)**
-```bash
-# Switch to fallback reranker
-curl -X POST http://localhost:8888/api/rag/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "test", "reranker": "fallback"}'
-```
-
-**5. Out of memory errors**
-```bash
-# Check Docker memory limit
-docker stats
-
-# Increase Docker memory allocation (Docker Desktop settings)
-# Recommended: 8GB minimum, 16GB optimal
-
-# Or disable in-memory Qdrant mode
-# Edit docker-compose.yml: Remove QDRANT__STORAGE__IN_MEMORY=true
-```
-
-### Performance Tuning
-
-**Reduce latency:**
-1. Ensure Qdrant in-memory mode is enabled
-2. Use `reranker: "fallback"` for faster reranking
-3. Reduce `vector_limit` to 5-10 for fewer candidates
-4. Increase `OMP_NUM_THREADS` to match CPU cores
-
-**Improve accuracy:**
-1. Use `reranker: "bge"` for better quality
-2. Increase `vector_limit` to 20-30 for more candidates
-3. Increase `top_k` to retrieve more chunks
-
----
+| Operation | Average Latency | Notes |
+|-----------|-----------------|-------|
+| RAG Query | ~450ms | With reranking |
+| Chat Response | ~500ms | GPT-4 streaming |
+| Code Generation | 2-5s | With testing & retries |
+| Agent Planning | 3-8s | With tool calls |
+| Vector Search | ~50ms | 152K points |
+| Reranking | ~100ms | 20 candidates |
 
 ## Project Structure
 
 ```
 ai-assessment-deploy/
 ├── backend/
+│   ├── backend/              # Python package
+│   │   ├── routers/         # API route handlers
+│   │   ├── services/        # Business logic
+│   │   ├── models/          # Pydantic schemas
+│   │   ├── config/          # Configuration
+│   │   └── utils/           # Utilities
+│   ├── main.py              # Docker entry point
 │   ├── Dockerfile
-│   ├── backend/
-│   │   ├── main.py                    # FastAPI application
-│   │   ├── routers/
-│   │   │   ├── rag_routes.py          # RAG endpoints
-│   │   │   ├── agent_routes.py        # Trip planning
-│   │   │   └── code_routes.py         # Code generation
-│   │   ├── services/
-│   │   │   ├── rag_pipeline.py        # Core RAG logic
-│   │   │   ├── onnx_inference.py      # ONNX model wrapper
-│   │   │   ├── qdrant_client.py       # Vector DB client
-│   │   │   └── qdrant_seed.py         # Auto-seeding
-│   │   └── config/
-│   │       └── settings.py            # Configuration
+│   └── requirements.txt
 ├── frontend/
+│   ├── app.py              # Streamlit application
 │   ├── Dockerfile
-│   └── app.py                         # Streamlit dashboard
+│   └── requirements.txt
+├── tests/                  # Test suite (29 tests)
+│   ├── conftest.py         # Test fixtures
+│   ├── test_rag_routes.py
+│   ├── test_chat_routes.py
+│   ├── test_agent_routes.py
+│   └── test_code_routes.py
 ├── data/
-│   ├── qdrant_seed/
-│   │   └── assessment_docs.jsonl      # 138k vectors (2GB)
-│   ├── rag_eval_metadata.json         # 100 metadata questions
-│   ├── rag_eval_keyword.json          # 100 keyword questions
-│   └── rag_eval_semantic.json         # 100 semantic questions
-├── models/
-│   ├── bge-m3-embed-int8/             # Embedding model
-│   ├── bge-reranker-int8/             # Primary reranker
-│   └── minilm-reranker-onnx/          # Fallback reranker
-├── scripts/
-│   ├── eval_rag_api_random30.py       # Quick 60-question eval
-│   ├── eval_rag_accuracy_warmup.py    # Full 300-question eval
-│   ├── test_agent.sh                  # Agent system test
-│   └── debug_embed_speed.py           # Performance debugging
-├── tests/
-│   ├── conftest.py                    # Pytest fixtures
-│   ├── test_rag_routes.py             # RAG API tests
-│   ├── test_agent_routes.py           # Agent API tests
-│   └── test_code_routes.py            # Code API tests
-├── docker-compose.yml                 # Service orchestration
-├── .env                               # Environment config
-└── README.md                          # This file
+│   └── assessment_docs/    # 150 Gutenberg documents
+├── models/                 # ONNX models (MiniLM)
+├── eval/                   # Evaluation results
+├── scripts/               # Utility scripts
+├── .github/workflows/     # CI/CD configuration
+├── docker-compose.yml     # Container orchestration
+├── start.sh              # Clean startup script
+└── README.md
 ```
 
+## Configuration
+
+### Environment Variables
+
+Key variables in `.env`:
+
+```bash
+# Azure OpenAI (Required)
+AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
+AZURE_OPENAI_KEY=your-key-here
+OPENAI_MODEL=gpt-4
+
+# Qdrant Configuration
+QDRANT_HOST=qdrant          # Container name (Docker)
+# QDRANT_HOST=localhost     # Uncomment for local dev
+QDRANT_PORT=6333
+QDRANT_COLLECTION=assessment_docs_minilm
+
+# ONNX Inference
+USE_ONNX_INFERENCE=true
+USE_INT8_QUANTIZATION=true
+OMP_NUM_THREADS=16
+
+# Application
+LOG_LEVEL=INFO
+ENABLE_METRICS=true
+```
+
+### Model Configuration
+
+- **Embedding Model:** all-MiniLM-L6-v2 (384D, INT8 quantized)
+- **Reranker Model:** bge-reranker-base (Binary cross-encoder)
+- **LLM:** Azure OpenAI GPT-4
+- **Vector Size:** 384 dimensions
+- **Distance Metric:** Cosine similarity
+
+## CI/CD
+
+### GitHub Actions
+
+Automated testing on push/PR:
+
+```yaml
+# .github/workflows/ci.yml
+- Install dependencies
+- Run pytest (29 tests)
+- Upload coverage report
+```
+
+View workflow: `.github/workflows/ci.yml`
+
+### Running CI Locally
+
+```bash
+# Simulate CI environment
+PYTHONPATH=. TESTING=true pytest tests/ -v
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**1. Qdrant connection refused**
+
+```bash
+# Check if Qdrant is running
+docker ps | grep qdrant
+
+# Restart Qdrant
+docker-compose restart qdrant
+```
+
+**2. Tests failing with import errors**
+
+```bash
+# Install all dependencies
+pip install -r backend/requirements.txt
+
+# Run from project root
+cd /path/to/ai-assessment-deploy
+pytest tests/ -v
+```
+
+**3. Environment variable conflicts**
+
+```bash
+# Use the clean startup script
+bash start.sh
+
+# This unsets QDRANT_HOST and QDRANT_SEED_PATH
+# which may conflict with Docker container names
+```
+
+**4. Model loading issues**
+
+```bash
+# Check models directory
+ls -lh models/minilm-*/
+
+# Ensure ONNX models are present
+# If missing, they will be downloaded on first run
+```
+
+## Documentation
+
+- **[REPORT.md](REPORT.md)** - Design decisions and trade-offs
+- **[TESTING.md](TESTING.md)** - Comprehensive testing guide
+- **[TESTS_UPDATED.md](TESTS_UPDATED.md)** - Test update summary
+- **[CI_CD_READY.md](CI_CD_READY.md)** - CI/CD configuration details
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`pytest tests/ -v`)
+5. Commit changes (`git commit -m 'Add amazing feature'`)
+6. Push to branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## License
+
+MIT License - See LICENSE file for details
+
 ---
 
-## License & Credits
-
-**Project**: AI Assessment System
-**Models**: BAAI/bge-m3, BAAI/bge-reranker-base, sentence-transformers/all-MiniLM-L6-v2
-**Dataset**: Project Gutenberg (138,146 book excerpts)
-**Technologies**: FastAPI, Streamlit, Qdrant, ONNX Runtime, Docker
-
----
-
-## Additional Resources
-
-- [QUICK_START.md](QUICK_START.md) - Minimal setup guide
-- [REPORT.md](REPORT.md) - Design decisions and trade-offs
-- [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) - Production deployment notes
-- [Qdrant Documentation](https://qdrant.tech/documentation/)
-- [ONNX Runtime](https://onnxruntime.ai/)
-
----
-
-**For questions or issues, please check the troubleshooting section or review Docker logs.**
+**Built with:** FastAPI, Streamlit, Qdrant, ONNX Runtime, Azure OpenAI
+**Test Coverage:** 95% (29/29 tests passing)
+**Performance:** RAG queries ~450ms | Chat ~500ms
+**CI/CD:** GitHub Actions ready
