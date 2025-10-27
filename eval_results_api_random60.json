@@ -1,0 +1,769 @@
+{
+  "summary": {
+    "total_questions": 60,
+    "top5_correct": 0,
+    "top1_correct": 0,
+    "top5_accuracy_percent": 0.0,
+    "top1_accuracy_percent": 0.0,
+    "random_seed": 42,
+    "backend_url": "http://localhost:8888",
+    "latency": {
+      "mean_ms": 226.90663439910472,
+      "median_ms": 213.89619298861362,
+      "p95_ms": 341.3506060023792,
+      "min_ms": 151.39691899821628,
+      "max_ms": 414.33337998751085
+    },
+    "latency_breakdown": {
+      "embed": {
+        "mean_ms": 7.053733217859796,
+        "median_ms": 5.978291999781504,
+        "p95_ms": 17.612227995414287
+      },
+      "vector": {
+        "mean_ms": 6.917384850142601,
+        "median_ms": 5.756369006121531,
+        "p95_ms": 16.67319401167333
+      },
+      "rerank": {
+        "mean_ms": 212.6390823160667,
+        "median_ms": 201.62742800312117,
+        "p95_ms": 301.8101839988958
+      }
+    },
+    "hit_rank_distribution": {},
+    "category_breakdown": {
+      "metadata": {
+        "total": 20,
+        "top5_accuracy_percent": 0.0,
+        "top1_accuracy_percent": 0.0,
+        "latency": {
+          "embed": {
+            "mean_ms": 6.408973101497395,
+            "median_ms": 5.423938506282866
+          },
+          "vector": {
+            "mean_ms": 7.501558101648698,
+            "median_ms": 5.7643515028757975
+          },
+          "rerank": {
+            "mean_ms": 199.2859857986332,
+            "median_ms": 194.36445100291166
+          },
+          "total": {
+            "mean_ms": 213.53866100034793,
+            "median_ms": 208.5836414989899
+          }
+        }
+      },
+      "keyword": {
+        "total": 20,
+        "top5_accuracy_percent": 0.0,
+        "top1_accuracy_percent": 0.0,
+        "latency": {
+          "embed": {
+            "mean_ms": 6.66316485076095,
+            "median_ms": 5.33086150244344
+          },
+          "vector": {
+            "mean_ms": 7.050249499297934,
+            "median_ms": 5.570879999140743
+          },
+          "rerank": {
+            "mean_ms": 215.1991235485184,
+            "median_ms": 200.14160550636007
+          },
+          "total": {
+            "mean_ms": 229.1824784471828,
+            "median_ms": 211.51850448950427
+          }
+        }
+      },
+      "semantic": {
+        "total": 20,
+        "top5_accuracy_percent": 0.0,
+        "top1_accuracy_percent": 0.0,
+        "latency": {
+          "embed": {
+            "mean_ms": 8.089061701321043,
+            "median_ms": 8.094146505754907
+          },
+          "vector": {
+            "mean_ms": 6.2003469494811725,
+            "median_ms": 5.805661996419076
+          },
+          "rerank": {
+            "mean_ms": 223.43213760104845,
+            "median_ms": 213.3893115023966
+          },
+          "total": {
+            "mean_ms": 237.9987637497834,
+            "median_ms": 226.06252850528108
+          }
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "question": "What is Ten Thousand a-Year. Volume 3. about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 164.7120800043922,
+      "embed_ms": 4.19059200794436,
+      "vector_ms": 5.130909994477406,
+      "rerank_ms": 155.15035299176816
+    },
+    {
+      "question": "Who wrote The Agrarian Crusade: A Chronicle of the Farmer in Politics?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 289.578406009241,
+      "embed_ms": 4.172698012553155,
+      "vector_ms": 5.179201005375944,
+      "rerank_ms": 279.97533899906557
+    },
+    {
+      "question": "What is The lost hunter: A tale of early times about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 159.1957720083883,
+      "embed_ms": 3.94695698923897,
+      "vector_ms": 5.03486800880637,
+      "rerank_ms": 149.97994300210848
+    },
+    {
+      "question": "Who wrote Aunt Jane's Nieces on Vacation?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 210.51517500018235,
+      "embed_ms": 6.630028990912251,
+      "vector_ms": 11.438191999332048,
+      "rerank_ms": 191.99736100563314
+    },
+    {
+      "question": "What is A Royal Prisoner about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 151.39691899821628,
+      "embed_ms": 3.427179006393999,
+      "vector_ms": 5.388291014241986,
+      "rerank_ms": 142.24414799537044
+    },
+    {
+      "question": "Who wrote Frivolities, Especially Addressed to Those Who Are Tired of Being Serious?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 236.1469820025377,
+      "embed_ms": 5.950880004093051,
+      "vector_ms": 7.778072991641238,
+      "rerank_ms": 222.1130600082688
+    },
+    {
+      "question": "What is The Mission Of Mr. Eustace Greyne\n1905 about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 208.8564550067531,
+      "embed_ms": 4.406672000186518,
+      "vector_ms": 5.859257013071328,
+      "rerank_ms": 198.3484770025825
+    },
+    {
+      "question": "What is A Cathedral Courtship about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 180.12962699867785,
+      "embed_ms": 3.5635519889183342,
+      "vector_ms": 5.029337989981286,
+      "rerank_ms": 171.30346600606572
+    },
+    {
+      "question": "Who wrote Matthew Arnold's Sohrab and Rustum, and other poems?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 329.28421499673277,
+      "embed_ms": 17.612227995414287,
+      "vector_ms": 12.26071199926082,
+      "rerank_ms": 299.09226499148645
+    },
+    {
+      "question": "What is Outward Bound Or, Young America Afloat: A Story of Travel and Adventure about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 230.14366600546055,
+      "embed_ms": 15.110209002159536,
+      "vector_ms": 10.553022002568468,
+      "rerank_ms": 203.9962759881746
+    },
+    {
+      "question": "Who wrote Brick and Marble in the Middle Ages: Notes of Tours in the North of Italy?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 210.24960999784525,
+      "embed_ms": 5.495276011060923,
+      "vector_ms": 4.729205000330694,
+      "rerank_ms": 199.79782699374482
+    },
+    {
+      "question": "Who wrote Lines in Pleasant Places: Being the Aftermath of an Old Angler?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 208.3108279912267,
+      "embed_ms": 5.61091500276234,
+      "vector_ms": 5.671264007105492,
+      "rerank_ms": 196.7315410001902
+    },
+    {
+      "question": "Who wrote The Madigans?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 289.9879279866582,
+      "embed_ms": 7.815735007170588,
+      "vector_ms": 15.572977004921995,
+      "rerank_ms": 265.74139700096566
+    },
+    {
+      "question": "What is Culm Rock\nThe Story of a Year: What it Brought and What it Taught about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 167.70361000089906,
+      "embed_ms": 4.766821002704091,
+      "vector_ms": 5.857438998646103,
+      "rerank_ms": 156.8310769944219
+    },
+    {
+      "question": "What is The Mirror of Literature, Amusement, and Instruction. Volume 13, No. 370, May 16, 1829 about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 239.2151579988422,
+      "embed_ms": 5.665074000717141,
+      "vector_ms": 5.984317002003081,
+      "rerank_ms": 227.32497700781096
+    },
+    {
+      "question": "What is The Agrarian Crusade: A Chronicle of the Farmer in Politics about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 193.3580909972079,
+      "embed_ms": 11.05543298763223,
+      "vector_ms": 16.67319401167333,
+      "rerank_ms": 164.859530996182
+    },
+    {
+      "question": "What is The Atlantic Monthly, Volume 11, No. 67, May, 1863\nA Magazine of Literature, Art, and Politics about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 194.9339599959785,
+      "embed_ms": 5.666878001648001,
+      "vector_ms": 5.027913997764699,
+      "rerank_ms": 184.00950299110264
+    },
+    {
+      "question": "What is Little Downy: The History of a Field-Mouse about?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 272.329115003231,
+      "embed_ms": 5.352601001504809,
+      "vector_ms": 6.983119994401932,
+      "rerank_ms": 259.56745400617365
+    },
+    {
+      "question": "Who wrote Little Downy: The History of a Field-Mouse?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 153.58499600552022,
+      "embed_ms": 4.327304006437771,
+      "vector_ms": 4.330707000917755,
+      "rerank_ms": 144.73591098794714
+    },
+    {
+      "question": "Who wrote Old Rose and Silver?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "metadata",
+      "best_rank": null,
+      "retrieval_ms": 181.1406269989675,
+      "embed_ms": 3.4124290104955435,
+      "vector_ms": 5.549160996451974,
+      "rerank_ms": 171.91981000360101
+    },
+    {
+      "question": "Does the text of 'Kate Vernon A Tale Vol 1 Of 3' mention room?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 213.89619298861362,
+      "embed_ms": 5.2430689975153655,
+      "vector_ms": 6.750913002179004,
+      "rerank_ms": 201.62742800312117
+    },
+    {
+      "question": "Does the text of 'The Agrarian Crusade: A Chronicle of the Farmer in Politics' mention man?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 217.0490700082155,
+      "embed_ms": 5.527033994439989,
+      "vector_ms": 6.590521996258758,
+      "rerank_ms": 204.61858400085475
+    },
+    {
+      "question": "Does the text of 'The Bush Boys: History and Adventures of a Cape Farmer and his Family' mention war?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 226.11460099869873,
+      "embed_ms": 5.361888004699722,
+      "vector_ms": 5.417390988441184,
+      "rerank_ms": 215.1151599973673
+    },
+    {
+      "question": "Does the text of 'Frivolities, Especially Addressed to Those Who Are Tired of Being Serious' mention time?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 173.3020699903136,
+      "embed_ms": 6.0021450044587255,
+      "vector_ms": 5.380560003686696,
+      "rerank_ms": 161.67783200216945
+    },
+    {
+      "question": "Does the text of 'A Cathedral Courtship' mention heart?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 175.3826880012639,
+      "embed_ms": 5.057290007243864,
+      "vector_ms": 5.587608000496402,
+      "rerank_ms": 164.5156099984888
+    },
+    {
+      "question": "Does the text of 'Political Pamphlets' mention king?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 166.53177599073388,
+      "embed_ms": 3.951415012124926,
+      "vector_ms": 5.250678994343616,
+      "rerank_ms": 157.09359099855646
+    },
+    {
+      "question": "Does the text of 'Up The Baltic; Or, Young America in Norway, Sweden, and Denmark' mention war?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 414.33337998751085,
+      "embed_ms": 18.039318005321547,
+      "vector_ms": 22.86806798656471,
+      "rerank_ms": 373.1880919949617
+    },
+    {
+      "question": "Does the text of 'In a German Pension' mention man?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 341.3506060023792,
+      "embed_ms": 22.123699993244372,
+      "vector_ms": 17.040600010659546,
+      "rerank_ms": 301.8101839988958
+    },
+    {
+      "question": "Does the text of 'Through Siberia and Manchuria By Rail' mention life?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 158.96183399308939,
+      "embed_ms": 4.279307002434507,
+      "vector_ms": 5.764858011389151,
+      "rerank_ms": 148.690861009527
+    },
+    {
+      "question": "Does the text of 'The Mirror of Literature, Amusement, and Instruction. Volume 13, No. 370, May 16, 1829' mention man?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 273.4069010039093,
+      "embed_ms": 6.5719319973140955,
+      "vector_ms": 5.571978006628342,
+      "rerank_ms": 261.0316270001931
+    },
+    {
+      "question": "Does the text of 'Hero Tales From History' mention day?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 307.1792330010794,
+      "embed_ms": 3.818382989265956,
+      "vector_ms": 5.870845998288132,
+      "rerank_ms": 297.2222289972706
+    },
+    {
+      "question": "Does the text of 'The Atlantic Monthly, Volume 08, No. 50, December, 1861\nA Magazine of Literature, Art, and Politics' mention day?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 204.40596199478023,
+      "embed_ms": 6.078636986785568,
+      "vector_ms": 5.569781991653144,
+      "rerank_ms": 192.5250209897058
+    },
+    {
+      "question": "Does the text of 'The Girl S Own Paper Vol Xx No 988 December 3 1898' mention day?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 284.7093640011735,
+      "embed_ms": 6.398764002369717,
+      "vector_ms": 6.113337003625929,
+      "rerank_ms": 271.97158099443186
+    },
+    {
+      "question": "Does the text of 'The Florentine Painters of the Renaissance\nWith An Index To Their Works' mention face?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 209.1408159903949,
+      "embed_ms": 5.12732399511151,
+      "vector_ms": 5.089059995952994,
+      "rerank_ms": 198.65578300959896
+    },
+    {
+      "question": "Does the text of 'The Ink-Stain (Tache d'encre) — Complete' mention hand?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 207.52503399853595,
+      "embed_ms": 5.693546001566574,
+      "vector_ms": 5.236098004388623,
+      "rerank_ms": 196.2691769876983
+    },
+    {
+      "question": "Does the text of 'The science of fairy tales' mention hand?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 207.26082799956203,
+      "embed_ms": 4.616578997229226,
+      "vector_ms": 4.746544000227004,
+      "rerank_ms": 197.59595301002264
+    },
+    {
+      "question": "Does the text of 'Matthew Arnold's Sohrab and Rustum, and other poems' mention man?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 235.18856799637433,
+      "embed_ms": 5.853651004144922,
+      "vector_ms": 5.246287997579202,
+      "rerank_ms": 223.67217199644074
+    },
+    {
+      "question": "Does the text of 'Anxious Audrey' mention time?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 179.47489499056246,
+      "embed_ms": 4.139805008890107,
+      "vector_ms": 5.399424990173429,
+      "rerank_ms": 169.65102498943452
+    },
+    {
+      "question": "Does the text of 'The Water-Babies' mention king?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 225.15574199496768,
+      "embed_ms": 5.299835000187159,
+      "vector_ms": 6.186764003359713,
+      "rerank_ms": 213.40578400122467
+    },
+    {
+      "question": "Does the text of 'The Head Girl at the Gables' mention friend?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "keyword",
+      "best_rank": null,
+      "retrieval_ms": 163.28000801149756,
+      "embed_ms": 4.079675010871142,
+      "vector_ms": 5.3236690000630915,
+      "rerank_ms": 153.64477699040435
+    },
+    {
+      "question": "According to '00016_canadian-melodies-and-poems_52803', what happens when I knew thee\n        Stretched boundless in beauty the bosom to glad??",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 194.47999299154617,
+      "embed_ms": 5.978291999781504,
+      "vector_ms": 5.086824996396899,
+      "rerank_ms": 183.12304699793458
+    },
+    {
+      "question": "According to '00051_annie-o-the-banks-o-dee_37357', what happens when she got up?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 191.92990999727044,
+      "embed_ms": 6.299407992628403,
+      "vector_ms": 5.9486019890755415,
+      "rerank_ms": 179.42749900976196
+    },
+    {
+      "question": "According to '00050_essays-of-michel-de-montaigne-volume-08_3588', what happens when he had nobody near him but a valet de\n     chambre, a little fellow, and not well armed?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 224.21616700012237,
+      "embed_ms": 8.494575013173744,
+      "vector_ms": 5.0238450057804585,
+      "rerank_ms": 210.421308001969
+    },
+    {
+      "question": "According to '00088_the-boys-life-of-edison_50523', what happens when ABOUT FOURTEEN OR FIFTEEN YEARS OF AGE\n\nMR?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 270.44661800027825,
+      "embed_ms": 6.827872988651507,
+      "vector_ms": 5.12683299893979,
+      "rerank_ms": 258.08680200134404
+    },
+    {
+      "question": "According to '00038_the-atlantic-monthly-volume-08-no-50-december-1861a-magazine_11524', what happens when you have\ncalled this morning, my dear Sir?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 225.85265300585888,
+      "embed_ms": 7.433908001985401,
+      "vector_ms": 5.665019998559728,
+      "rerank_ms": 212.48686300532427
+    },
+    {
+      "question": "According to '00007_english-embroidered-bookbindings_17585', what happens when they have been minded to write on their hobbies, have\nsought beauty and stateliness of work where they could most readily find\nthem, and that the labourers in the book-field of our own country are\nnot numerous?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 255.81453400081955,
+      "embed_ms": 10.79122899682261,
+      "vector_ms": 5.756369006121531,
+      "rerank_ms": 239.03907800558954
+    },
+    {
+      "question": "In '00106_lines-in-pleasant-places-being-the-aftermath-of-an-old-angle_23343', why i already possess three\ncopies, one the gift of the author, but I very nearly wrote off for a\nfourth?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 226.27240400470328,
+      "embed_ms": 7.145328010665253,
+      "vector_ms": 4.616425998392515,
+      "rerank_ms": 214.29175999946892
+    },
+    {
+      "question": "According to '00066_the-letter-of-petrus-peregrinus-on-the-magnet-a-d-1269_50524', what happens when he sailed\nfrom the shores of the Old World in 1492 as appears from the surprise\nwith which he noticed the deviation of the needle from North as well as\nfrom the consternation of his pilots?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 263.73224599228706,
+      "embed_ms": 9.57386099616997,
+      "vector_ms": 5.3356819989858195,
+      "rerank_ms": 248.57644700387027
+    },
+    {
+      "question": "In '00079_stories-of-american-life-and-adventure_15597', why the governor sent\nSpelman, who was glad enough to go to the Indians again,?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 184.9198910058476,
+      "embed_ms": 6.973408002522774,
+      "vector_ms": 5.84275099390652,
+      "rerank_ms": 171.819074996165
+    },
+    {
+      "question": "According to '00019_fifty-years-other-poems_17884', what happens when hope\n      Sinks dead, and 'round us everywhere\n    Hangs stifling darkness, and we grope\n      With hands uplifted in despair?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 413.0664950062055,
+      "embed_ms": 10.009328005253337,
+      "vector_ms": 6.842236005468294,
+      "rerank_ms": 395.8737149951048
+    },
+    {
+      "question": "According to '00054_betty-lee-senior_44808', what happens when I went East with Father, you know?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 228.89565100194886,
+      "embed_ms": 7.909072010079399,
+      "vector_ms": 6.150271001388319,
+      "rerank_ms": 214.50764700421132
+    },
+    {
+      "question": "According to '00013_the-comedies-of-william-congreve-volume-1-of-2_24215', what happens when he and his successors go beyond the artistic\nobjection, one takes leave to say, they misapprehend the thing\ncriticised?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 218.63845200277865,
+      "embed_ms": 9.09674700233154,
+      "vector_ms": 5.5686569976387545,
+      "rerank_ms": 203.74653099861462
+    },
+    {
+      "question": "According to '00081_two-thousand-miles-below_29965', what happens when he eased the big weatherbeaten car to a stop?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 199.7559640003601,
+      "embed_ms": 8.653212993522175,
+      "vector_ms": 6.004078997648321,
+      "rerank_ms": 184.80299900693353
+    },
+    {
+      "question": "In '00043_the-new-germany_34223', why kaiserism was dead--deader even\nthan Tsarism--?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 282.7465609880164,
+      "embed_ms": 7.146039992221631,
+      "vector_ms": 9.03877399105113,
+      "rerank_ms": 266.31702900340315
+    },
+    {
+      "question": "In '00092_the-madigans_21243', why she did note, though, that she began at the\nbottom, a proceeding Split fancied merely?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 205.42152400594205,
+      "embed_ms": 6.899371001054533,
+      "vector_ms": 5.7685729989316314,
+      "rerank_ms": 192.4813420046121
+    },
+    {
+      "question": "In '00090_beyond_38134', why and I answer, first,?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 262.49841701064724,
+      "embed_ms": 4.734376008855179,
+      "vector_ms": 5.551966998609714,
+      "rerank_ms": 251.9658989913296
+    },
+    {
+      "question": "According to '00052_rodmoor-a-romance_53339', what happens when led away from her mother’s side for\nsome childish fault?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 204.17556598840747,
+      "embed_ms": 8.279221001430415,
+      "vector_ms": 6.468899009632878,
+      "rerank_ms": 189.18816999939736
+    },
+    {
+      "question": "In '00084_rutledge_40385', why that it\nwore it that evening however, I knew then as now, was?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 202.86851999117061,
+      "embed_ms": 9.457710999413393,
+      "vector_ms": 9.835591990849935,
+      "rerank_ms": 183.21051899692975
+    },
+    {
+      "question": "According to '00029_phelim-otoole-s-courtship-and-other-storiestraits-and-storie_16019', what happens when it is known that in their religion every domestic animal has\nits patron saint, to whom its owner may at any time pray on its behalf?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 245.89030399511103,
+      "embed_ms": 9.136630003922619,
+      "vector_ms": 7.482030006940477,
+      "rerank_ms": 229.03390300052706
+    },
+    {
+      "question": "According to '00102_folkwaysa-study-of-the-sociological-importance-of-usages-man_24253', what happens when they include a judgment that\nthey are conducive to societal welfare, and when they exert a coercion\non the individual to conform to them, although they are not coordinated\nby any authority (cf?",
+      "top5_correct": false,
+      "top1_correct": false,
+      "category": "semantic",
+      "best_rank": null,
+      "retrieval_ms": 258.3534050063463,
+      "embed_ms": 10.941643005935475,
+      "vector_ms": 6.893508005305193,
+      "rerank_ms": 240.24311899847817
+    }
+  ]
+}

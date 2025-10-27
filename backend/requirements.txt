@@ -1,0 +1,50 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-multipart==0.0.6
+
+# Azure OpenAI
+openai==1.3.0
+azure-identity==1.15.0
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+
+# Vector Database & RAG
+qdrant-client==1.15.1
+onnxruntime==1.16.3
+onnx==1.15.0
+langchain==0.1.0
+pypdf==3.17.1
+huggingface-hub==0.16.4
+transformers==4.35.0
+sentencepiece==0.1.99
+
+# Document Processing
+python-docx==1.1.0
+beautifulsoup4==4.12.2
+markdownify==0.11.6
+
+# Utilities
+httpx==0.25.2
+aiofiles==23.2.1
+python-dotenv==1.0.0
+tenacity==8.2.3
+numpy>=1.24.0
+tiktoken==0.12.0
+
+# Monitoring & Logging
+prometheus-client==0.19.0
+structlog==23.2.0
+
+# SSE Support
+sse-starlette==1.8.2
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0

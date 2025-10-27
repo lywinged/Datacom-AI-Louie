@@ -1,0 +1,112 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.log
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Environment variables (DO NOT COMMIT SECRETS!)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+tmp/
+temp/
+
+# Data files (too large for git)
+data/qdrant_seed/
+data/*.jsonl
+*.sqlite3
+*.sqlite3-journal
+
+# Logs
+logs/
+*.log
+
+# Model files (too large for git)
+models/*.onnx
+models/*.pt
+models/*.bin
+models/*.safetensors
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep model README files
+!models/README.md
+!models/*/README.md
+
+# Qdrant data (local development)
+qdrant_data/
+
+# Frontend build
+frontend/node_modules/
+frontend/.streamlit/
+
+# Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Coverage reports
+.coverage
+coverage.xml
+*.cover
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Evaluation results (optional - uncomment if you want to keep them out)
+# eval/*.json
+# eval/*.txt
