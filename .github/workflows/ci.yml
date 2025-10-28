@@ -34,7 +34,6 @@ jobs:
 
     - name: Run pytest
       run: |
-        cd /home/runner/work/$(basename $GITHUB_REPOSITORY)/$(basename $GITHUB_REPOSITORY)
         python -m pytest tests/ -v --tb=short
       env:
         PYTHONPATH: .
