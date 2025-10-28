@@ -63,17 +63,14 @@ tmp/
 temp/
 
 # Data files (too large for git)
-
+data/
 
 # Logs
 logs/
 *.log
 
 # Model files (too large for git)
-models/*.onnx
-models/*.pt
-models/*.bin
-models/*.safetensors
+model/
 
 # OS
 .DS_Store
