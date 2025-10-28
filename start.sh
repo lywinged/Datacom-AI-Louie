@@ -18,16 +18,12 @@ QDRANT_INTERNAL_PORT="${QDRANT_INTERNAL_PORT:-6333}"
 OPEN_BROWSER="${OPEN_BROWSER:-1}"
 
 # ===========================
-# Helper functions
+# Helpers
 # ===========================
 echo_hr() { echo "=========================================="; }
 
 DC() {
-  if command -v docker-compose >/dev/null 2>&1; then
-    docker-compose "$@"
-  else
-    docker compose "$@"
-  fi
+  if command -v docker-compose >/dev/null 2>&1; then docker-compose "$@"; else docker compose "$@"; fi
 }
 
 dc_port() {
@@ -38,8 +34,7 @@ dc_port() {
 }
 
 wait_http_ok() {
-  local url="$1"
-  local tries="${2:-10}"
+  local url="$1" tries="${2:-10}"
   for ((i=1;i<=tries;i++)); do
     if curl -fsS "$url" >/dev/null 2>&1; then return 0; fi
     sleep 2
@@ -49,66 +44,57 @@ wait_http_ok() {
 
 open_url() {
   local url="$1"
-  if [[ "$OPEN_BROWSER" != "1" ]]; then
-    echo "ℹ️  Please open manually: $url"
-    return
-  fi
+  [[ "$OPEN_BROWSER" == "1" ]] || { echo "ℹ️  Open manually: $url"; return; }
   case "$OSTYPE" in
     darwin*) open "$url" ;;
-    linux-gnu*)
-      command -v xdg-open >/dev/null && xdg-open "$url" \
-        || command -v gnome-open >/dev/null && gnome-open "$url" \
-        || echo "ℹ️  Please open manually: $url"
-      ;;
+    linux-gnu*) command -v xdg-open >/dev/null && xdg-open "$url" || command -v gnome-open >/dev/null && gnome-open "$url" || echo "ℹ️  Open manually: $url" ;;
     msys*|cygwin*) start "$url" ;;
-    *) echo "ℹ️  Please open manually: $url" ;;
+    *) echo "ℹ️  Open manually: $url" ;;
   esac
 }
 
 # ===========================
-# Step 0: Ensure unzip + extract data.zip into ./data/
+# Step 0: MUST extract data.zip → ./data (flatten)
 # ===========================
 echo_hr
-echo "📦 Checking and extracting ${DATA_ZIP}..."
+echo "📦 Preparing ${DATA_ZIP} → ${DATA_DIR} (flatten 1-level)"
 echo_hr
 
 if [[ ! -f "$DATA_ZIP" ]]; then
-  echo "❌ Required file '$DATA_ZIP' not found!"
-  echo "   Please place data.zip in the same directory as this script."
+  echo "❌ Required '$DATA_ZIP' not found next to this script."
   exit 1
 fi
 
 if ! command -v unzip >/dev/null 2>&1; then
-  echo "❌ unzip not found! Please install first:"
-  echo "   macOS: brew install unzip  |  Ubuntu: sudo apt install unzip"
+  echo "❌ 'unzip' not found. Install it first (macOS: brew install unzip, Ubuntu: sudo apt install unzip)."
   exit 1
 fi
 
-# Always clean previous data folder
+# Clean and extract to temp
 rm -rf "$DATA_DIR"
 mkdir -p "$DATA_DIR"
+TMP_DIR="$(mktemp -d)"
+unzip -o -q "$DATA_ZIP" -d "$TMP_DIR" || { echo "❌ Failed to extract $DATA_ZIP"; exit 1; }
 
-# Extract to a temporary folder to detect nesting
-TMP_DIR=$(mktemp -d)
-unzip -o -q "$DATA_ZIP" -d "$TMP_DIR" || {
-  echo "❌ Failed to extract $DATA_ZIP"
-  exit 1
-}
+# Remove macOS junk
+find "$TMP_DIR" -name "__MACOSX" -type d -prune -exec rm -rf {} + || true
+find "$TMP_DIR" -name ".DS_Store" -type f -delete || true
 
-# Check if the extracted folder contains a single directory wrapper (data/data/xxx)
-first_subdir="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
-subdir_count="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"
-
-if [[ -n "$first_subdir" && "$subdir_count" -eq 1 ]]; then
-  echo "   • Detected nested folder inside zip: flattening structure..."
-  mv "$first_subdir"/* "$DATA_DIR"/
-else
-  echo "   • Extracting files directly into $DATA_DIR"
-  mv "$TMP_DIR"/* "$DATA_DIR"/ 2>/dev/null || true
-fi
+# Flatten: move top-level files directly; for each top-level DIR, move its *contents* into DATA_DIR
+shopt -s dotglob nullglob
+for entry in "$TMP_DIR"/*; do
+  if [[ -d "$entry" ]]; then
+    # Move the CONTENTS of the directory (not the directory itself)
+    # Use rsync to merge safely (preserves perms; avoids 'arg list too long')
+    rsync -a "$entry"/ "$DATA_DIR"/
+  elif [[ -f "$entry" ]]; then
+    mv "$entry" "$DATA_DIR"/
+  fi
+done
+shopt -u dotglob nullglob
 
 rm -rf "$TMP_DIR"
-echo "   ✓ Extraction complete: $DATA_DIR"
+echo "   ✓ Flattened into: $DATA_DIR"
 echo
 
 # ===========================
@@ -129,10 +115,10 @@ echo
 # Step 2: Start containers
 # ===========================
 echo "🐳 Starting Docker containers..."
-DC up -d "$@" || {
-  echo "❌ Docker startup failed! Check logs with: docker-compose logs"
+if ! DC up -d "$@"; then
+  echo "❌ Docker startup failed! Check logs with: docker-compose logs (or docker compose logs)"
   exit 1
-}
+fi
 echo "✅ Containers started successfully!"
 echo
 
@@ -178,10 +164,17 @@ echo "   • API Docs:  http://localhost:${BACKEND_PORT}/docs"
 echo "   • Qdrant:    http://localhost:${QDRANT_PORT}/dashboard"
 echo
 echo "📝 Commands:"
-echo "   • Logs:      docker-compose logs -f"
-echo "   • Stop:      docker-compose down"
-echo "   • Restart:   docker-compose restart"
-echo "   • Status:    docker-compose ps"
+if command -v docker-compose >/dev/null 2>&1; then
+  echo "   • Logs:      docker-compose logs -f"
+  echo "   • Stop:      docker-compose down"
+  echo "   • Restart:   docker-compose restart"
+  echo "   • Status:    docker-compose ps"
+else
+  echo "   • Logs:      docker compose logs -f"
+  echo "   • Stop:      docker compose down"
+  echo "   • Restart:   docker compose restart"
+  echo "   • Status:    docker compose ps"
+fi
 echo
 
 # ===========================
@@ -193,6 +186,6 @@ sleep 1
 open_url "$URL"
 
 echo
-echo "🎉 Ready! If the UI didn’t open automatically, visit:"
+echo "🎉 Ready! If the browser didn’t open, visit:"
 echo "   $URL"
 echo_hr

@@ -43,9 +43,9 @@ htmlcov/
 .tox/
 
 # Environment variables (DO NOT COMMIT SECRETS!)
-.env
-.env.local
-.env.*.local
+# .env
+# .env.local
+# .env.*.local
 *.key
 *.pem
 credentials.json
