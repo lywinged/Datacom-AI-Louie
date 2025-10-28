@@ -4,7 +4,7 @@ Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilit
 
 ## Features
 
-- **Task 3.1:** Conversational Chat with streaming support (Azure OpenAI)
+- **Task 3.1:** Conversational Chat with streaming 
 - **Task 3.2:** High-Performance RAG QA with Qdrant vector database
 - **Task 3.3:** Autonomous Planning Agent for trip planning
 - **Task 3.4:** Self-Healing Code Assistant with automated testing
@@ -30,7 +30,7 @@ Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilit
 │ Vector │ │Azure│  │Inference│ │ Session │
 │   DB   │ │OpenAI  │Models  │ │   DB    │
 └────────┘ └─────┘  └────────┘ └─────────┘
- 152K pts  GPT-4    MiniLM     Chat Hist
+ 152K pts  GPT-3.5    MiniLM     Chat Hist
 ```
 
 ### Technology Stack
@@ -64,7 +64,8 @@ Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilit
 1. **Configure environment variables:**
 
 ```bash
-cp .env.example .env
+cp .env
+# I left my own API key here, because yours doesn't work and there is no response from you at all 😂
 # Edit .env with your Azure OpenAI credentials:
 # AZURE_OPENAI_ENDPOINT=your-endpoint
 # AZURE_OPENAI_KEY=your-key
@@ -74,8 +75,14 @@ cp .env.example .env
 2. **Start all services:**
 
 ```bash
-# Clean start script (unsets conflicting env vars)
+# 🔥 All in one, easy to play 🔥
+🌟🌟🌟🌟🌟🌟🌟🌟 
+
 bash start.sh
+
+🌟🌟🌟🌟🌟🌟🌟🌟 
+
+
 
 # Or use docker-compose directly
 docker-compose up -d
@@ -259,12 +266,12 @@ pytest tests/ -vv --tb=long
 
 | Operation | Average Latency | Notes |
 |-----------|-----------------|-------|
-| RAG Query | ~450ms | With reranking |
-| Chat Response | ~500ms | GPT-4 streaming |
+| RAG Query | ~300ms | With reranking |
+| Chat Response | ~500ms | GPT-3.5 streaming |
 | Code Generation | 2-5s | With testing & retries |
 | Agent Planning | 3-8s | With tool calls |
 | Vector Search | ~50ms | 152K points |
-| Reranking | ~100ms | 20 candidates |
+| Reranking | ~200ms | 20 candidates |
 
 ## Project Structure
 
@@ -332,8 +339,8 @@ ENABLE_METRICS=true
 ### Model Configuration
 
 - **Embedding Model:** all-MiniLM-L6-v2 (384D, INT8 quantized)
-- **Reranker Model:** bge-reranker-base (Binary cross-encoder)
-- **LLM:** Azure OpenAI GPT-4
+- **Reranker Model:** MiniLM-reranker
+- **LLM:** OpenAI GPT-3.5
 - **Vector Size:** 384 dimensions
 - **Distance Metric:** Cosine similarity
 
@@ -411,15 +418,12 @@ ls -lh models/minilm-*/
 - **[TESTS_UPDATED.md](TESTS_UPDATED.md)** - Test update summary
 - **[CI_CD_READY.md](CI_CD_READY.md)** - CI/CD configuration details
 
-## Contributing
+## Contributing and Credit
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`pytest tests/ -v`)
-5. Commit changes (`git commit -m 'Add amazing feature'`)
-6. Push to branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+1. Great assessment from Datacom
+2. My old projects
+3. Claude CODE & CODEX
+
 
 ## License
 
