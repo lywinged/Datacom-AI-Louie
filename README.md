@@ -2,12 +2,31 @@
 
 Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilities.
 
+### Quick Start (Docker - Recommended)
+
+I add my api-key into .env for smooth UX.
+
+🌟🌟🌟🌟🌟🌟🌟🌟 
+
+Bash: 
+    ./start.sh
+
+That's all!🎉
+
+🌟🌟🌟🌟🌟🌟🌟🌟 
+
+
 ## Features
 
 - **Task 3.1:** Conversational Chat with streaming 
 - **Task 3.2:** High-Performance RAG QA with Qdrant vector database
+                150 books 60MB, gen-Q&A pairs for testing keyword, metadata(Binary Bag-of-Words), semantic(ROUGH) performance.
+                (Median: 140-230ms)
 - **Task 3.3:** Autonomous Planning Agent for trip planning
+                (Industral level with context adaption)
 - **Task 3.4:** Self-Healing Code Assistant with automated testing
+                (Industral level with context adaption)
+
 
 ## Architecture
 
@@ -59,28 +78,7 @@ Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilit
 - Python 3.10+ (for local development)
 - Azure OpenAI API key
 
-### Quick Start (Docker - Recommended)
 
-1. **Configure environment variables:**
-
-```bash
-cp .env
-# I left my own API key here, because yours doesn't work and there is no response from you at all 😂
-# Edit .env with your Azure OpenAI credentials:
-# AZURE_OPENAI_ENDPOINT=your-endpoint
-# AZURE_OPENAI_KEY=your-key
-# OPENAI_MODEL=gpt-4
-```
-
-2. **Start all services:**
-
-```bash
-# 🔥 All in one, easy to play 🔥
-🌟🌟🌟🌟🌟🌟🌟🌟 
-
-bash start.sh
-
-🌟🌟🌟🌟🌟🌟🌟🌟 
 
 
 
