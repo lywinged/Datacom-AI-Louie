@@ -1,105 +1,198 @@
 #!/bin/bash
+set -euo pipefail
 
-# Unset host environment variables that should use container names/paths in Docker
-# These variables may be set in your shell for local development,
-# but Docker containers need different values (container names, absolute paths)
+# ===========================
+# Config
+# ===========================
+DATA_ZIP="data.zip"
+DATA_DIR="data"
+
+FRONTEND_SERVICE="${FRONTEND_SERVICE:-frontend}"
+BACKEND_SERVICE="${BACKEND_SERVICE:-backend}"
+QDRANT_SERVICE="${QDRANT_SERVICE:-qdrant}"
+
+FRONTEND_INTERNAL_PORT="${FRONTEND_INTERNAL_PORT:-8501}"
+BACKEND_INTERNAL_PORT="${BACKEND_INTERNAL_PORT:-8888}"
+QDRANT_INTERNAL_PORT="${QDRANT_INTERNAL_PORT:-6333}"
+
+OPEN_BROWSER="${OPEN_BROWSER:-1}"
+
+# ===========================
+# Helper functions
+# ===========================
+echo_hr() { echo "=========================================="; }
+
+DC() {
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
+dc_port() {
+  local svc="$1" internal="$2"
+  local port
+  port="$(DC port "$svc" "$internal" 2>/dev/null | awk -F: 'NF{print $NF; exit}')"
+  echo "${port:-$internal}"
+}
+
+wait_http_ok() {
+  local url="$1"
+  local tries="${2:-10}"
+  for ((i=1;i<=tries;i++)); do
+    if curl -fsS "$url" >/dev/null 2>&1; then return 0; fi
+    sleep 2
+  done
+  return 1
+}
+
+open_url() {
+  local url="$1"
+  if [[ "$OPEN_BROWSER" != "1" ]]; then
+    echo "ℹ️  Please open manually: $url"
+    return
+  fi
+  case "$OSTYPE" in
+    darwin*) open "$url" ;;
+    linux-gnu*)
+      command -v xdg-open >/dev/null && xdg-open "$url" \
+        || command -v gnome-open >/dev/null && gnome-open "$url" \
+        || echo "ℹ️  Please open manually: $url"
+      ;;
+    msys*|cygwin*) start "$url" ;;
+    *) echo "ℹ️  Please open manually: $url" ;;
+  esac
+}
+
+# ===========================
+# Step 0: Ensure unzip + extract data.zip into ./data/
+# ===========================
+echo_hr
+echo "📦 Checking and extracting ${DATA_ZIP}..."
+echo_hr
+
+if [[ ! -f "$DATA_ZIP" ]]; then
+  echo "❌ Required file '$DATA_ZIP' not found!"
+  echo "   Please place data.zip in the same directory as this script."
+  exit 1
+fi
+
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "❌ unzip not found! Please install first:"
+  echo "   macOS: brew install unzip  |  Ubuntu: sudo apt install unzip"
+  exit 1
+fi
+
+# Always clean previous data folder
+rm -rf "$DATA_DIR"
+mkdir -p "$DATA_DIR"
+
+# Extract to a temporary folder to detect nesting
+TMP_DIR=$(mktemp -d)
+unzip -o -q "$DATA_ZIP" -d "$TMP_DIR" || {
+  echo "❌ Failed to extract $DATA_ZIP"
+  exit 1
+}
+
+# Check if the extracted folder contains a single directory wrapper (data/data/xxx)
+first_subdir="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
+subdir_count="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"
+
+if [[ -n "$first_subdir" && "$subdir_count" -eq 1 ]]; then
+  echo "   • Detected nested folder inside zip: flattening structure..."
+  mv "$first_subdir"/* "$DATA_DIR"/
+else
+  echo "   • Extracting files directly into $DATA_DIR"
+  mv "$TMP_DIR"/* "$DATA_DIR"/ 2>/dev/null || true
+fi
+
+rm -rf "$TMP_DIR"
+echo "   ✓ Extraction complete: $DATA_DIR"
+echo
+
+# ===========================
+# Step 1: Clean env
+# ===========================
 unset QDRANT_HOST
 unset QDRANT_SEED_PATH
 
-echo "=========================================="
+echo_hr
 echo "🚀 Starting AI Assessment Platform"
-echo "=========================================="
-echo ""
-echo "🧹 Cleaning environment variables..."
-echo "   ✓ QDRANT_HOST unset (will use 'qdrant' container name)"
-echo "   ✓ QDRANT_SEED_PATH unset (will use container path)"
-echo ""
+echo_hr
+echo "🧹 Environment cleaned:"
+echo "   ✓ QDRANT_HOST unset"
+echo "   ✓ QDRANT_SEED_PATH unset"
+echo
 
-# Start Docker Compose
+# ===========================
+# Step 2: Start containers
+# ===========================
 echo "🐳 Starting Docker containers..."
-docker-compose up -d "$@"
-
-if [ $? -ne 0 ]; then
-    echo ""
-    echo "❌ Failed to start containers"
-    echo "   Check: docker-compose logs"
-    exit 1
-fi
-
-echo ""
+DC up -d "$@" || {
+  echo "❌ Docker startup failed! Check logs with: docker-compose logs"
+  exit 1
+}
 echo "✅ Containers started successfully!"
-echo ""
+echo
 
-# Wait for services to be ready
-echo "⏳ Waiting for services to start..."
+# ===========================
+# Step 3: Detect mapped ports
+# ===========================
+FRONTEND_PORT="$(dc_port "$FRONTEND_SERVICE" "$FRONTEND_INTERNAL_PORT")"
+BACKEND_PORT="$(dc_port "$BACKEND_SERVICE" "$BACKEND_INTERNAL_PORT")"
+QDRANT_PORT="$(dc_port "$QDRANT_SERVICE" "$QDRANT_INTERNAL_PORT")"
+
+# ===========================
+# Step 4: Health checks
+# ===========================
+echo "⏳ Waiting for backend and Qdrant..."
 sleep 3
 
-# Check backend health
 echo "🔍 Checking backend API..."
-for i in {1..10}; do
-    if curl -s http://localhost:8888/health > /dev/null 2>&1; then
-        echo "   ✓ Backend API is ready"
-        break
-    fi
-    if [ $i -eq 10 ]; then
-        echo "   ⚠️  Backend API not responding (check logs with: docker-compose logs backend)"
-    else
-        sleep 2
-    fi
-done
+if wait_http_ok "http://localhost:${BACKEND_PORT}/health"; then
+  echo "   ✓ Backend API is ready"
+else
+  echo "   ⚠️  Backend not responding"
+fi
 
-# Check Qdrant
 echo "🔍 Checking Qdrant..."
-if curl -s http://localhost:6333 > /dev/null 2>&1; then
-    echo "   ✓ Qdrant is ready"
+if wait_http_ok "http://localhost:${QDRANT_PORT}"; then
+  echo "   ✓ Qdrant is ready"
 else
-    echo "   ⚠️  Qdrant not responding (check logs with: docker-compose logs qdrant)"
+  echo "   ⚠️  Qdrant not responding"
 fi
 
-echo ""
-echo "=========================================="
+# ===========================
+# Step 5: Summary
+# ===========================
+echo
+echo_hr
 echo "✅ AI Assessment Platform Started!"
-echo "=========================================="
-echo ""
-echo "📊 Available Services:"
-echo "   • Frontend:        http://localhost:8501"
-echo "   • Backend API:     http://localhost:8888"
-echo "   • API Docs:        http://localhost:8888/docs"
-echo "   • Qdrant:          http://localhost:6333/dashboard"
-echo ""
-echo "📝 Useful Commands:"
-echo "   • View logs:       docker-compose logs -f"
-echo "   • Stop services:   docker-compose down"
-echo "   • Restart:         docker-compose restart"
-echo "   • Check status:    docker-compose ps"
-echo ""
+echo_hr
+echo
+echo "📊 Services:"
+echo "   • Frontend:  http://localhost:${FRONTEND_PORT}"
+echo "   • Backend:   http://localhost:${BACKEND_PORT}"
+echo "   • API Docs:  http://localhost:${BACKEND_PORT}/docs"
+echo "   • Qdrant:    http://localhost:${QDRANT_PORT}/dashboard"
+echo
+echo "📝 Commands:"
+echo "   • Logs:      docker-compose logs -f"
+echo "   • Stop:      docker-compose down"
+echo "   • Restart:   docker-compose restart"
+echo "   • Status:    docker-compose ps"
+echo
 
-# Open browser to frontend UI
-echo "🌐 Opening frontend in browser..."
-sleep 2
+# ===========================
+# Step 6: Open UI
+# ===========================
+URL="http://localhost:${FRONTEND_PORT}"
+echo "🌐 Opening frontend: $URL"
+sleep 1
+open_url "$URL"
 
-# Detect OS and open browser
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    open http://localhost:8501
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux
-    if command -v xdg-open > /dev/null; then
-        xdg-open http://localhost:8501
-    elif command -v gnome-open > /dev/null; then
-        gnome-open http://localhost:8501
-    else
-        echo "   ℹ️  Please manually open: http://localhost:8501"
-    fi
-elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-    # Windows (Git Bash or Cygwin)
-    start http://localhost:8501
-else
-    echo "   ℹ️  Please manually open: http://localhost:8501"
-fi
-
-echo ""
-echo "🎉 Ready to use! The UI should open automatically."
-echo "   If not, visit: http://localhost:8501"
-echo ""
-echo "=========================================="
+echo
+echo "🎉 Ready! If the UI didn’t open automatically, visit:"
+echo "   $URL"
+echo_hr
