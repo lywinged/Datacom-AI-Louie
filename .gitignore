@@ -43,7 +43,7 @@ htmlcov/
 .tox/
 
 # Environment variables (DO NOT COMMIT SECRETS!)
-# .env
+.env
 .env.local
 .env.*.local
 *.key
