@@ -52,50 +52,50 @@ open_url() {
     *) echo "ℹ️  Open manually: $url" ;;
   esac
 }
-
 # ===========================
-# Step 0: MUST extract data.zip → ./data (flatten)
+# Step 0: OPTIONAL extract data.zip → ./data (flatten)
 # ===========================
 echo_hr
-echo "📦 Preparing ${DATA_ZIP} → ${DATA_DIR} (flatten 1-level)"
+echo "📦 Preparing optional ${DATA_ZIP} → ${DATA_DIR} (flatten 1-level)"
 echo_hr
 
-if [[ ! -f "$DATA_ZIP" ]]; then
-  echo "❌ Required '$DATA_ZIP' not found next to this script."
-  exit 1
-fi
-
-if ! command -v unzip >/dev/null 2>&1; then
-  echo "❌ 'unzip' not found. Install it first (macOS: brew install unzip, Ubuntu: sudo apt install unzip)."
-  exit 1
-fi
-
-# Clean and extract to temp
-rm -rf "$DATA_DIR"
-mkdir -p "$DATA_DIR"
-TMP_DIR="$(mktemp -d)"
-unzip -o -q "$DATA_ZIP" -d "$TMP_DIR" || { echo "❌ Failed to extract $DATA_ZIP"; exit 1; }
-
-# Remove macOS junk
-find "$TMP_DIR" -name "__MACOSX" -type d -prune -exec rm -rf {} + || true
-find "$TMP_DIR" -name ".DS_Store" -type f -delete || true
-
-# Flatten: move top-level files directly; for each top-level DIR, move its *contents* into DATA_DIR
-shopt -s dotglob nullglob
-for entry in "$TMP_DIR"/*; do
-  if [[ -d "$entry" ]]; then
-    # Move the CONTENTS of the directory (not the directory itself)
-    # Use rsync to merge safely (preserves perms; avoids 'arg list too long')
-    rsync -a "$entry"/ "$DATA_DIR"/
-  elif [[ -f "$entry" ]]; then
-    mv "$entry" "$DATA_DIR"/
+if [[ -f "$DATA_ZIP" ]]; then
+  if ! command -v unzip >/dev/null 2>&1; then
+    echo "❌ 'unzip' not found. Install it first (macOS: brew install unzip, Ubuntu: sudo apt install unzip)."
+    exit 1
   fi
-done
-shopt -u dotglob nullglob
 
-rm -rf "$TMP_DIR"
-echo "   ✓ Flattened into: $DATA_DIR"
-echo
+  # 清理并解压到临时目录
+  rm -rf "$DATA_DIR"
+  mkdir -p "$DATA_DIR"
+  TMP_DIR="$(mktemp -d)"
+  if ! unzip -o -q "$DATA_ZIP" -d "$TMP_DIR"; then
+    echo "❌ Failed to extract $DATA_ZIP"
+    exit 1
+  fi
+
+  # 移除 macOS 垃圾文件
+  find "$TMP_DIR" -name "__MACOSX" -type d -prune -exec rm -rf {} + || true
+  find "$TMP_DIR" -name ".DS_Store" -type f -delete || true
+
+  # 扁平化：把顶层目录的“内容”合并到 data/，顶层文件直接移入
+  shopt -s dotglob nullglob
+  for entry in "$TMP_DIR"/*; do
+    if [[ -d "$entry" ]]; then
+      rsync -a "$entry"/ "$DATA_DIR"/
+    elif [[ -f "$entry" ]]; then
+      mv "$entry" "$DATA_DIR"/
+    fi
+  done
+  shopt -u dotglob nullglob
+
+  rm -rf "$TMP_DIR"
+  echo "   ✓ Flattened into: $DATA_DIR"
+  echo
+else
+  echo "ℹ️  '$DATA_ZIP' not found — skipping extraction. Existing '$DATA_DIR' will be used if present."
+  mkdir -p "$DATA_DIR"
+fi
 
 # ===========================
 # Step 1: Clean env

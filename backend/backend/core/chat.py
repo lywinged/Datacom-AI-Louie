@@ -22,7 +22,7 @@ class ChatService:
         self.provider = "azure"
         self.model = settings.MODEL_NAME
 
-        # GPT-4o pricing defaults. When using other models adjust via env.
+        # Gpt4o pricing defaults. When using other models adjust via env.
         self.prompt_cost_per_1k = settings.PROMPT_COST_PER_1K
         self.completion_cost_per_1k = settings.COMPLETION_COST_PER_1K
 

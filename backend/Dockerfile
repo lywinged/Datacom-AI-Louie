@@ -22,8 +22,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 RUN patchelf --clear-execstack \
     /usr/local/lib/python3.10/site-packages/onnxruntime/capi/onnxruntime_pybind11_state.cpython-310-x86_64-linux-gnu.so
 
-# Copy application code
-COPY . .
+# Copy application code - keep backend structure
+COPY backend/ /app/backend/
 
 # Expose port
 EXPOSE 8888
@@ -33,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8888/health || exit 1
 
 # Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8888"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8888"]

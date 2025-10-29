@@ -1,136 +1,224 @@
-# RAG Evaluation Results
+# Enhanced Learning Test Results
 
-## Task 3.2 - RAG System Evaluation
+This directory contains automated learning test results from the enhanced learning system.
 
-### 评估配置
-- **评估时间：** 2025-10-28
-- **Backend URL：** http://localhost:8888
-- **测试集：** 60个问题（每类20个）
-  - Metadata问题：20个
-  - Keyword问题：20个
-  - Semantic问题：20个
-- **Random Seed：** 42（可复现）
-- **Reranker：** fallback (MiniLM ONNX)
-- **Vector Limit：** 10
-- **Content Char Limit：** 500
+## Directory Structure
 
-### 整体性能指标
-
-| 指标 | 值 |
-|------|-----|
-| **Top-5 准确率** | 73.3% (44/60) |
-| **Top-1 准确率** | 45.0% (27/60) |
-| **平均延迟** | 225.5ms |
-| **中位数延迟** | 209.0ms |
-| **P95延迟** | 345.1ms |
-
-### 分类别性能
-
-#### 1. Keyword Questions（关键词问题）
-**表现最好** ✨
-- Total: 20 questions
-- **Top-5 Accuracy: 90.0%** (18/20)
-- **Top-1 Accuracy: 60.0%** (12/20)
-- Retrieval Time - Mean: 227.4ms, Median: 207.7ms
-- Embed Time - Mean: 5.5ms, Median: 5.4ms
-- Vector Time - Mean: 6.6ms, Median: 6.0ms
-- Rerank Time - Mean: 215.0ms, Median: 196.3ms
-
-#### 2. Semantic Questions（语义问题）
-**表现良好** ✅
-- Total: 20 questions
-- **Top-5 Accuracy: 80.0%** (16/20)
-- **Top-1 Accuracy: 40.0%** (8/20)
-- Retrieval Time - Mean: 258.1ms, Median: 224.0ms
-- Embed Time - Mean: 8.1ms, Median: 7.7ms
-- Vector Time - Mean: 8.2ms, Median: 7.7ms
-- Rerank Time - Mean: 241.6ms, Median: 207.7ms
-
-#### 3. Metadata Questions（元数据问题）
-**需要改进** ⚠️
-- Total: 20 questions
-- **Top-5 Accuracy: 50.0%** (10/20)
-- **Top-1 Accuracy: 35.0%** (7/20)
-- Retrieval Time - Mean: 191.0ms, Median: 182.4ms
-- Embed Time - Mean: 4.8ms, Median: 4.9ms
-- Vector Time - Mean: 5.6ms, Median: 5.6ms
-- Rerank Time - Mean: 180.3ms, Median: 172.3ms
-
-### 延迟分析
-
-#### 各阶段耗时占比
-1. **Reranking** - 占主要时间（~200ms，约89%）
-2. **Vector Search** - 很快（~6ms，约3%）
-3. **Embedding** - 很快（~6ms，约3%）
-4. **其他开销** - LLM生成等（~13ms，约5%）
-
-#### 性能优化建议
-- ✅ Embedding已优化（ONNX INT8量化）
-- ✅ Vector search已优化（Qdrant HNSW索引）
-- ⚠️ Reranking是主要瓶颈，可以考虑：
-  - 使用更快的reranker模型
-  - 减少rerank的候选数量
-  - 考虑GPU加速
-
-### 文件说明
-
-- **eval_RAG_task3_2.json** - 完整的评估结果（JSON格式）
-  - 包含每个问题的详细结果
-  - 包含timing信息
-  - 包含准确率统计
-
-- **eval_RAG_task3_2.txt** - 评估过程输出（文本格式）
-  - 包含每个问题的实时评估过程
-  - 包含最终总结报告
-  - 便于阅读和分享
-
-### 如何重新运行评估
-
-```bash
-cd /Users/yilu/Downloads/ai_assessment_project/ai-assessment-deploy
-
-# 运行评估并保存结果
-python3 -u scripts/eval_rag_20x20x20.py \
-  --backend http://localhost:8888 \
-  --output eval/eval_RAG_task3_2.json \
-  > eval/eval_RAG_task3_2.txt 2>&1 &
-
-# 监控进度
-tail -f eval/eval_RAG_task3_2.txt
-
-# 或使用不同的seed
-python3 -u scripts/eval_rag_20x20x20.py \
-  --backend http://localhost:8888 \
-  --seed 123 \
-  --output eval/eval_RAG_task3_2_seed123.json \
-  > eval/eval_RAG_task3_2_seed123.txt 2>&1
+```
+eval/
+├── README.md                                    # This file
+├── enhanced_learning_YYYYMMDD_HHMMSS.json      # Test results (one per run)
+└── [future visualization files]                 # Charts and graphs
 ```
 
-### 修复历史
+## File Format
 
-**问题：** 最初所有评估结果显示0%准确率
+Each test run generates a JSON file with the following structure:
 
-**根因：** API返回`citations`字段，但评估脚本期望`chunks`字段
+```json
+{
+  "scenarios": [
+    {
+      "name": "scenario_name",
+      "category": "budget_optimization | duration_handling | local_vs_international | extreme_constraints | mixed_complexity",
+      "origin": "City",
+      "destination": "City",
+      "days": 3,
+      "budget_nzd": 1500,
+      "preferences": ["adventure", "culture"],
+      "expected_difficulty": "easy | medium | hard | extreme",
+      "learning_focus": "Description of what this scenario tests"
+    }
+  ],
+  "results": [
+    {
+      "iteration": 1,
+      "scenario": {...},
+      "response": {
+        "learning": {
+          "success": true,
+          "reward": 0.970,
+          "breakdown": {
+            "budget_score": 1.00,
+            "quality_score": 0.90,
+            "reliability_score": 1.00
+          }
+        },
+        "strategy_used": {
+          "tool_order": "attractions->flights->weather",
+          "model_temp": 0.6,
+          "attractions_k": 50
+        },
+        "itinerary": {...},
+        "tool_calls": [...],
+        "planning_time_ms": 7500
+      },
+      "elapsed": 8.5
+    }
+  ],
+  "dashboard": {
+    "learning_objectives": {
+      "budget_optimization": {
+        "target": 0.85,
+        "current": 0.808,
+        "progress": 95.1
+      },
+      ...
+    },
+    "category_performance": {
+      "budget_optimization": {
+        "total": 6,
+        "success": 4,
+        "avg_reward": 0.808,
+        "rewards": [0.45, 1.0, 0.95, ...]
+      },
+      ...
+    },
+    "difficulty_performance": {
+      "easy": {
+        "total": 12,
+        "success": 11,
+        "avg_reward": 0.95
+      },
+      ...
+    },
+    "tool_order_performance": {
+      "attractions->flights->weather": {
+        "count": 27,
+        "avg_reward": 0.837,
+        "rewards": [0.97, 0.85, ...]
+      },
+      ...
+    }
+  }
+}
+```
 
-**修复：** 修改 `eval_rag_20x20x20.py` Line 371
+## Learning Objectives
+
+The system tracks 6 learning objectives:
+
+1. **Budget Optimization** (Target: 0.85)
+   - Learn to optimize costs across different budget ranges
+   - Scenarios: $400-$5000 NZD budgets
+
+2. **Duration Handling** (Target: 0.80)
+   - Adapt to different trip lengths
+   - Scenarios: 2-14 day trips
+
+3. **Tool Order Optimization** (Target: 0.90)
+   - Find optimal tool calling sequence
+   - Best: `attractions->flights->weather`
+
+4. **Local vs International** (Target: 0.80)
+   - Differentiate local and international travel strategies
+   - Scenarios: NZ cities, Australia, Asia
+
+5. **Extreme Constraints** (Target: 0.70)
+   - Handle extreme budget/duration constraints
+   - Scenarios: Ultra-low budget, ultra-short/long duration
+
+6. **Mixed Complexity** (Target: 0.75)
+   - Test strategy generalization
+   - Scenarios: Random combinations
+
+## Performance Metrics
+
+### Reward Breakdown
+Each test receives a reward (0.0-1.0) composed of:
+- **Budget Score (40%)**: How well the plan stays within budget
+- **Quality Score (30%)**: Quality of attractions and experiences
+- **Reliability Score (30%)**: Tool success rate, no errors
+
+### Success Criteria
+- **Success**: Reward > 0.5
+- **Partial Success**: 0.3 < Reward ≤ 0.5
+- **Failure**: Reward ≤ 0.3
+
+### Difficulty Levels
+- **Easy**: Local trips, ample budget (Expected reward: 0.90+)
+- **Medium**: Short international, medium budget (Expected: 0.80+)
+- **Hard**: Long trips, tight budget (Expected: 0.60+)
+- **Extreme**: Ultra constraints (Expected: 0.40+)
+
+## How to Analyze Results
+
+### 1. Check Overall Achievement
+Look at `dashboard.learning_objectives`:
 ```python
-# 修改前
-chunks = data.get("chunks", [])
+import json
+with open('enhanced_learning_20251029_075119.json') as f:
+    data = json.load(f)
 
-# 修改后
-chunks = data.get("citations", [])  # API returns "citations", not "chunks"
+for obj, metrics in data['dashboard']['learning_objectives'].items():
+    print(f"{obj}: {metrics['current']:.3f}/{metrics['target']:.3f} ({metrics['progress']:.1f}%)")
 ```
 
-### 结论
+### 2. Analyze Category Performance
+```python
+for category, perf in data['dashboard']['category_performance'].items():
+    success_rate = perf['success'] / perf['total'] * 100
+    print(f"{category}: {success_rate:.1f}% success, avg reward {perf['avg_reward']:.3f}")
+```
 
-RAG系统整体表现良好：
-- ✅ Keyword检索非常准确（90% Top-5）
-- ✅ Semantic检索表现良好（80% Top-5）
-- ⚠️ Metadata检索需要改进（50% Top-5）
-- ✅ 延迟控制在可接受范围（平均225ms）
-- ⚠️ Reranking是主要性能瓶颈
+### 3. Find Best Tool Order
+```python
+tool_orders = data['dashboard']['tool_order_performance']
+best = max(tool_orders.items(), key=lambda x: x[1]['avg_reward'])
+print(f"Best tool order: {best[0]} (reward: {best[1]['avg_reward']:.3f})")
+```
 
-**推荐改进方向：**
-1. 优化metadata字段的索引和检索策略
-2. 考虑使用更快的reranker或GPU加速
-3. 调整vector_limit和content_char_limit参数平衡准确率和性能
+### 4. Identify Problem Scenarios
+```python
+low_reward_results = [r for r in data['results']
+                      if r['response'].get('learning', {}).get('reward', 0) < 0.5]
+print(f"Found {len(low_reward_results)} low-reward scenarios")
+for r in low_reward_results:
+    scenario = r['scenario']
+    print(f"  - {scenario['name']}: {scenario['category']}, difficulty={scenario['expected_difficulty']}")
+```
+
+## Running New Tests
+
+### Quick Test (20 iterations)
+```bash
+python enhanced_learning_test.py --iterations 20
+```
+
+### Standard Test (50 iterations)
+```bash
+python enhanced_learning_test.py --iterations 50
+```
+
+### Full Test (100 iterations)
+```bash
+python enhanced_learning_test.py --iterations 100
+```
+
+## Files in This Directory
+
+- `enhanced_learning_YYYYMMDD_HHMMSS.json` - Full test results with all scenarios, responses, and dashboard metrics
+- Future additions may include:
+  - Visualization charts (PNG/SVG)
+  - Summary reports (TXT/MD)
+  - Comparison analyses across multiple runs
+
+## Learning Data Persistence
+
+Learning data is also saved to:
+- `data/agent_experiences.jsonl` - Experience memory (one JSON per line)
+
+This memory persists across test runs, allowing the system to improve over time through the Bandit algorithm.
+
+## Documentation
+
+For detailed information, see:
+- `ENHANCED_LEARNING_SUMMARY_EN.md` - Complete learning system documentation
+- `QUICK_START_LEARNING_EN.md` - Quick start guide
+- `ENHANCED_LEARNING_SUMMARY.md` - 中文详细文档
+- `QUICK_START_LEARNING.md` - 中文快速开始指南
+
+---
+
+**Last Updated**: 2025-10-29
+**System Version**: Enhanced Learning v1.0

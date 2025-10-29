@@ -22,8 +22,49 @@ That's all!🎉
 - **Task 3.2:** High-Performance RAG QA with Qdrant vector database
                 150 books 60MB, gen-Q&A pairs for testing keyword, metadata(Binary Bag-of-Words), semantic(ROUGH) performance.
                 (Median: 140-230ms)
+Command:    
+        python ai-assessment-deploy/scripts/eval_rag_performance_task3_2.py
+EVALUATION SUMMARY
+model: minilm-embed-int8          minilm-reranker-int8
+🎯 Top-5 Accuracy: 73.3%
+🎯 Top-1 Accuracy: 45.0%
+⏱️  Mean Latency:  225.5ms
+⏱️  Median Latency:209.0ms
+🎲 Random Seed:   42
+📚 Category Breakdown:
+
+   METADATA:
+     Total: 20 questions
+     Top-5 Accuracy: 50.0%
+     Top-1 Accuracy: 35.0%
+     Retrieval Time - Mean: 191.0ms, Median: 182.4ms
+     Embed Time     - Mean: 4.8ms, Median: 4.9ms
+     Vector Time    - Mean: 5.6ms, Median: 5.6ms
+     Rerank Time    - Mean: 180.3ms, Median: 172.3ms
+
+   KEYWORD:
+     Total: 20 questions
+     Top-5 Accuracy: 90.0%
+     Top-1 Accuracy: 60.0%
+     Retrieval Time - Mean: 227.4ms, Median: 207.7ms
+     Embed Time     - Mean: 5.5ms, Median: 5.4ms
+     Vector Time    - Mean: 6.6ms, Median: 6.0ms
+     Rerank Time    - Mean: 215.0ms, Median: 196.3ms
+
+   SEMANTIC:
+     Total: 20 questions
+     Top-5 Accuracy: 80.0%
+     Top-1 Accuracy: 40.0%
+     Retrieval Time - Mean: 258.1ms, Median: 224.0ms
+     Embed Time     - Mean: 8.1ms, Median: 7.7ms
+     Vector Time    - Mean: 8.2ms, Median: 7.7ms
+     Rerank Time    - Mean: 241.6ms, Median: 207.7ms
+
+📁 Results saved to eval/eval_RAG_task3_2.json
+
 - **Task 3.3:** Autonomous Planning Agent for trip planning
                 (Industral level with context adaption)
+eval/eval_RAG_task3
 - **Task 3.4:** Self-Healing Code Assistant with automated testing
                 (Industral level with context adaption)
 
@@ -49,7 +90,7 @@ That's all!🎉
 │ Vector │ │Azure│  │Inference│ │ Session │
 │   DB   │ │OpenAI  │Models  │ │   DB    │
 └────────┘ └─────┘  └────────┘ └─────────┘
- 152K pts  GPT-3.5    MiniLM     Chat Hist
+ 152K pts  GPT-4o    MiniLM     Chat Hist
 ```
 
 ### Technology Stack

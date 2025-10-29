@@ -26,10 +26,15 @@ class ChatClient:
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is required")
 
-        self.client = AsyncOpenAI(api_key=api_key)
-        # Force use of gpt-3.5-turbo-0125 (the only accessible model)
-        # This overrides any system OPENAI_MODEL env var
-        self.model = "gpt-3.5-turbo-0125"
+        # Initialize OpenAI client with optional base URL
+        client_kwargs = {"api_key": api_key}
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+        if base_url:
+            client_kwargs["base_url"] = base_url
+
+        self.client = AsyncOpenAI(**client_kwargs)
+        # Use model from .env or default to Gpt4o
+        self.model = os.getenv("OPENAI_MODEL", "Gpt4o")
         self.conversation_history = []
 
         # Initialize tokenizer for accurate token counting

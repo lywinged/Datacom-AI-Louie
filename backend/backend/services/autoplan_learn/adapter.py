@@ -131,9 +131,10 @@ class AutoPlanAdapter:
         return {
             "success": success,
             "reward": reward,
+            "strategy": strategy.get("name", "unknown") if isinstance(strategy, dict) else str(strategy),
             "breakdown": {
-                "budget_score": budget_score,
-                "quality_score": quality_score,
-                "reliability_score": reliability_score
+                "budget": budget_score,
+                "quality": quality_score,
+                "reliability": reliability_score
             }
         }

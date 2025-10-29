@@ -63,7 +63,8 @@ def _get_openai_client() -> AsyncOpenAI:
         if not api_key:
             raise ValueError("OPENAI_API_KEY is required for LLM answer generation")
 
-        base_url = os.getenv("OPENAI_BASE_URL") or OPENAI_CONFIG.get("base_url")
+        # Support both OPENAI_BASE_URL and OPENAI_BASE_URL
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL") or OPENAI_CONFIG.get("base_url")
         client_kwargs = {"api_key": api_key}
         if base_url:
             client_kwargs["base_url"] = base_url
@@ -465,7 +466,7 @@ async def _generate_answer_with_llm(
     question: str,
     chunks: List[RetrievedChunk],
     *,
-    model: str = "gpt-3.5-turbo-0125"
+    model: str = "Gpt4o"
 ) -> Tuple[str, Optional[Dict[str, int]], float]:
     """Generate answer using LLM with retrieved context."""
     if not chunks:
@@ -639,7 +640,7 @@ async def answer_question(
         )
 
     # Generate answer with LLM or simple concatenation
-    llm_model = settings.OPENAI_MODEL or "gpt-3.5-turbo-0125"
+    llm_model = os.getenv("OPENAI_MODEL") or settings.OPENAI_MODEL or "Gpt4o"
     token_usage = None
     token_cost_usd = 0.0
     llm_used = use_llm

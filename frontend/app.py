@@ -227,8 +227,8 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8888").rstrip("/")
 MODEL_PRICING = {
     "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.0020},
     "gpt-3.5-turbo-0125": {"prompt": 0.0015, "completion": 0.0020},
-    "gpt-4o": {"prompt": 0.005, "completion": 0.015},
-    "gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},
+    "Gpt4o": {"prompt": 0.005, "completion": 0.015},
+    "Gpt4o-mini": {"prompt": 0.00015, "completion": 0.0006},
 }
 
 CURRENCY_TO_NZD = {
@@ -791,10 +791,11 @@ def llm_extract_constraints(text: str, existing: Optional[TripConstraints] = Non
             append_chat_history("assistant", local_reply)
             return existing or TripConstraints()
 
-        client = OpenAI(
-            api_key=api_key,
-            base_url=os.getenv("OPENAI_BASE_URL")
-        )
+        client_kwargs = {"api_key": api_key}
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+        if base_url:
+            client_kwargs["base_url"] = base_url
+        client = OpenAI(**client_kwargs)
 
         existing_json = existing.model_dump() if existing else {}
 
@@ -836,7 +837,7 @@ Rules:
         ])
 
         response = client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo-0125"),
+            model=os.getenv("OPENAI_MODEL", "Gpt4o"),
             messages=messages,
             temperature=0,
             max_tokens=200
@@ -1415,6 +1416,95 @@ with st.sidebar:
         else:
             st.metric("Success Rate", "N/A")
     st.markdown("---")
+
+    # Trip Learning Dashboard
+    st.markdown("**✈️ 🎓 Trip Learning Dashboard**")
+    if "learning_history" in st.session_state and len(st.session_state.learning_history["rewards"]) > 0:
+        learning_hist = st.session_state.learning_history
+
+        # Overall statistics
+        avg_reward = np.mean(learning_hist["rewards"])
+        latest_reward = learning_hist["rewards"][-1]
+        total_runs = len(learning_hist["rewards"])
+
+        col_l1, col_l2 = st.columns(2)
+        col_l1.metric("Total Runs", total_runs)
+        col_l2.metric("Avg Reward", f"{avg_reward:.3f}")
+
+        # Latest reward with trend
+        if len(learning_hist["rewards"]) >= 2:
+            prev_reward = learning_hist["rewards"][-2]
+            reward_delta = latest_reward - prev_reward
+            delta_text = f"{reward_delta:+.3f}" if reward_delta != 0 else "—"
+        else:
+            delta_text = None
+
+        st.metric("Latest Reward", f"{latest_reward:.3f}", delta=delta_text)
+
+        # Reward trend chart
+        st.markdown("**Reward Trend**")
+        df_reward = pd.DataFrame({
+            "Run": range(1, len(learning_hist["rewards"]) + 1),
+            "Reward": learning_hist["rewards"]
+        })
+        st.line_chart(df_reward.set_index("Run"))
+
+        # Component breakdown (latest)
+        if len(learning_hist["budget_rewards"]) > 0:
+            st.markdown("**Latest Component Rewards**")
+            latest_budget = learning_hist["budget_rewards"][-1]
+            latest_quality = learning_hist["quality_rewards"][-1]
+            latest_reliability = learning_hist["reliability_rewards"][-1]
+
+            col_c1, col_c2, col_c3 = st.columns(3)
+            col_c1.metric("💰", f"{latest_budget:.2f}")
+            col_c2.metric("⭐", f"{latest_quality:.2f}")
+            col_c3.metric("🔧", f"{latest_reliability:.2f}")
+
+        # Strategy distribution
+        strategy_counts = {}
+        for strategy in learning_hist["strategies"]:
+            strategy_counts[strategy] = strategy_counts.get(strategy, 0) + 1
+
+        if strategy_counts:
+            st.markdown("**Strategy Usage**")
+            for strategy, count in sorted(strategy_counts.items(), key=lambda x: x[1], reverse=True):
+                percentage = (count / total_runs) * 100
+                st.caption(f"{strategy}: {count} times ({percentage:.1f}%)")
+
+        # Show learning objectives progress (if we have targets)
+        st.markdown("**📈 Learning Objectives**")
+
+        # Calculate metrics for objectives
+        if total_runs >= 3:
+            recent_rewards = learning_hist["rewards"][-min(10, total_runs):]
+
+            # Budget optimization (target: >0.7)
+            avg_budget = np.mean(learning_hist["budget_rewards"][-min(10, total_runs):])
+            budget_target = 0.7
+            budget_progress = min(avg_budget / budget_target, 1.0)
+            st.markdown(f"💰 Budget Optimization: {avg_budget:.2f} / {budget_target:.2f}")
+            st.progress(budget_progress)
+
+            # Quality (target: >0.7)
+            avg_quality = np.mean(learning_hist["quality_rewards"][-min(10, total_runs):])
+            quality_target = 0.7
+            quality_progress = min(avg_quality / quality_target, 1.0)
+            st.markdown(f"⭐ Quality: {avg_quality:.2f} / {quality_target:.2f}")
+            st.progress(quality_progress)
+
+            # Reliability (target: >0.8)
+            avg_reliability = np.mean(learning_hist["reliability_rewards"][-min(10, total_runs):])
+            reliability_target = 0.8
+            reliability_progress = min(avg_reliability / reliability_target, 1.0)
+            st.markdown(f"🔧 Reliability: {avg_reliability:.2f} / {reliability_target:.2f}")
+            st.progress(reliability_progress)
+        else:
+            st.caption("Need at least 3 runs to show objectives")
+    else:
+        st.caption("No learning data yet - start planning trips!")
+
+    st.markdown("---")
     st.markdown("**💻 Code Agent Stats**")
     code_stats = st.session_state.code_stats
     total_runs_code = code_stats["total_runs"]
@@ -1470,6 +1560,107 @@ with st.sidebar:
                 st.caption(f"Message: {message}")
     else:
         st.info("No code runs yet this session")
+
+    st.markdown("---")
+
+    # Code Generation Learning Dashboard
+    st.markdown("**💻 🎓 Code Learning Dashboard**")
+    if "codegen_learning_history" in st.session_state and len(st.session_state.codegen_learning_history["rewards"]) > 0:
+        codegen_hist = st.session_state.codegen_learning_history
+
+        # Overall statistics
+        avg_reward_code = np.mean(codegen_hist["rewards"])
+        latest_reward_code = codegen_hist["rewards"][-1]
+        total_runs_code_learning = len(codegen_hist["rewards"])
+
+        col_cl1, col_cl2 = st.columns(2)
+        col_cl1.metric("Total Runs", total_runs_code_learning)
+        col_cl2.metric("Avg Reward", f"{avg_reward_code:.3f}")
+
+        # Latest reward with trend
+        if len(codegen_hist["rewards"]) >= 2:
+            prev_reward_code = codegen_hist["rewards"][-2]
+            reward_delta_code = latest_reward_code - prev_reward_code
+            delta_text_code = f"{reward_delta_code:+.3f}" if reward_delta_code != 0 else "—"
+        else:
+            delta_text_code = None
+
+        st.metric("Latest Reward", f"{latest_reward_code:.3f}", delta=delta_text_code)
+
+        # Reward trend chart
+        st.markdown("**Reward Trend**")
+        df_reward_code = pd.DataFrame({
+            "Run": range(1, len(codegen_hist["rewards"]) + 1),
+            "Reward": codegen_hist["rewards"]
+        })
+        st.line_chart(df_reward_code.set_index("Run"))
+
+        # Component breakdown (latest)
+        if len(codegen_hist["success_scores"]) > 0:
+            st.markdown("**Latest Component Scores**")
+            latest_success = codegen_hist["success_scores"][-1]
+            latest_efficiency = codegen_hist["efficiency_scores"][-1]
+            latest_quality = codegen_hist["quality_scores"][-1]
+            latest_speed = codegen_hist["speed_scores"][-1]
+
+            col_cc1, col_cc2 = st.columns(2)
+            col_cc1.metric("✅ Success", f"{latest_success:.2f}")
+            col_cc2.metric("⚡ Efficiency", f"{latest_efficiency:.2f}")
+
+            col_cc3, col_cc4 = st.columns(2)
+            col_cc3.metric("💎 Quality", f"{latest_quality:.2f}")
+            col_cc4.metric("🚀 Speed", f"{latest_speed:.2f}")
+
+        # Strategy distribution
+        strategy_counts_code = {}
+        for strategy in codegen_hist["strategies"]:
+            strategy_counts_code[strategy] = strategy_counts_code.get(strategy, 0) + 1
+
+        if strategy_counts_code:
+            st.markdown("**Strategy Usage**")
+            for strategy, count in sorted(strategy_counts_code.items(), key=lambda x: x[1], reverse=True):
+                percentage = (count / total_runs_code_learning) * 100
+                st.caption(f"{strategy}: {count} times ({percentage:.1f}%)")
+
+        # Language distribution
+        language_counts = {}
+        for lang in codegen_hist["languages"]:
+            language_counts[lang] = language_counts.get(lang, 0) + 1
+
+        if language_counts:
+            st.markdown("**Language Usage**")
+            for lang, count in sorted(language_counts.items(), key=lambda x: x[1], reverse=True):
+                percentage = (count / total_runs_code_learning) * 100
+                st.caption(f"{lang}: {count} times ({percentage:.1f}%)")
+
+        # Show learning objectives progress
+        st.markdown("**📈 Learning Objectives**")
+
+        if total_runs_code_learning >= 3:
+            # Success rate (target: >0.8)
+            avg_success = np.mean(codegen_hist["success_scores"][-min(10, total_runs_code_learning):])
+            success_target = 0.8
+            success_progress = min(avg_success / success_target, 1.0)
+            st.markdown(f"✅ Test Success: {avg_success:.2f} / {success_target:.2f}")
+            st.progress(success_progress)
+
+            # Efficiency (target: >0.7)
+            avg_efficiency = np.mean(codegen_hist["efficiency_scores"][-min(10, total_runs_code_learning):])
+            efficiency_target = 0.7
+            efficiency_progress = min(avg_efficiency / efficiency_target, 1.0)
+            st.markdown(f"⚡ Efficiency: {avg_efficiency:.2f} / {efficiency_target:.2f}")
+            st.progress(efficiency_progress)
+
+            # Code quality (target: >0.7)
+            avg_quality_code = np.mean(codegen_hist["quality_scores"][-min(10, total_runs_code_learning):])
+            quality_target_code = 0.7
+            quality_progress_code = min(avg_quality_code / quality_target_code, 1.0)
+            st.markdown(f"💎 Code Quality: {avg_quality_code:.2f} / {quality_target_code:.2f}")
+            st.progress(quality_progress_code)
+        else:
+            st.caption("Need at least 3 runs to show objectives")
+    else:
+        st.caption("No code learning data yet - start generating code!")
 
     st.markdown("---")
     st.text(f"Session: {st.session_state.session_id}")
@@ -2316,6 +2507,79 @@ elif current_mode == "trip" and prompt and prompt != "__MODE_ACTIVATED__":
                         st.markdown(f"\n🔧 Tools used: {len(tool_calls)} calls in {response.get('total_iterations', 0)} iterations")
                         st.markdown(f"⏱️ Planning time: {response.get('planning_time_ms', 0):.0f}ms")
 
+                        # Learning system feedback display
+                        learning = response.get("learning")
+                        if learning:
+                            st.markdown("---")
+                            st.markdown("### 🎓 Learning System Feedback")
+
+                            reward = learning.get("reward", 0.0)
+                            success = learning.get("success", False)
+                            strategy = learning.get("strategy", "unknown")
+
+                            # Display reward with color coding
+                            if reward >= 0.8:
+                                reward_color = "🟢"
+                                reward_text = "Excellent"
+                            elif reward >= 0.6:
+                                reward_color = "🟡"
+                                reward_text = "Good"
+                            elif reward >= 0.4:
+                                reward_color = "🟠"
+                                reward_text = "Fair"
+                            else:
+                                reward_color = "🔴"
+                                reward_text = "Needs Improvement"
+
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("Overall Reward", f"{reward:.3f}", delta=reward_text)
+                            with col2:
+                                st.metric("Strategy Used", strategy)
+                            with col3:
+                                status_icon = "✅" if success else "⚠️"
+                                st.metric("Success", status_icon)
+
+                            # Reward breakdown
+                            breakdown = learning.get("breakdown", {})
+                            if breakdown:
+                                st.markdown("**📊 Reward Breakdown:**")
+                                breakdown_cols = st.columns(3)
+
+                                budget_reward = breakdown.get("budget", 0.0)
+                                quality_reward = breakdown.get("quality", 0.0)
+                                reliability_reward = breakdown.get("reliability", 0.0)
+
+                                with breakdown_cols[0]:
+                                    st.markdown(f"💰 **Budget**: {budget_reward:.3f}")
+                                    st.progress(min(budget_reward, 1.0))
+
+                                with breakdown_cols[1]:
+                                    st.markdown(f"⭐ **Quality**: {quality_reward:.3f}")
+                                    st.progress(min(quality_reward, 1.0))
+
+                                with breakdown_cols[2]:
+                                    st.markdown(f"🔧 **Reliability**: {reliability_reward:.3f}")
+                                    st.progress(min(reliability_reward, 1.0))
+
+                            # Store learning history
+                            if "learning_history" not in st.session_state:
+                                st.session_state.learning_history = {
+                                    "timestamps": [],
+                                    "rewards": [],
+                                    "strategies": [],
+                                    "budget_rewards": [],
+                                    "quality_rewards": [],
+                                    "reliability_rewards": []
+                                }
+
+                            st.session_state.learning_history["timestamps"].append(datetime.now())
+                            st.session_state.learning_history["rewards"].append(reward)
+                            st.session_state.learning_history["strategies"].append(strategy)
+                            st.session_state.learning_history["budget_rewards"].append(breakdown.get("budget", 0.0))
+                            st.session_state.learning_history["quality_rewards"].append(breakdown.get("quality", 0.0))
+                            st.session_state.learning_history["reliability_rewards"].append(breakdown.get("reliability", 0.0))
+
                         agent_stats = st.session_state.agent_stats
                         if response.get("constraints_satisfied", False):
                             agent_stats["success"] += 1
@@ -2656,6 +2920,89 @@ elif current_mode == "code" and prompt and prompt != "__MODE_ACTIVATED__":
                                         line += f" (expected {expected})"
                                     st.markdown(f"  • {line}")
 
+                # LEARNING SYSTEM FEEDBACK
+                learning = result.get("learning")
+                if learning:
+                    st.markdown("---")
+                    st.markdown("### 🎓 Code Learning Feedback")
+
+                    reward = learning.get("reward", 0.0)
+                    success = learning.get("success", False)
+                    strategy = learning.get("strategy", "unknown")
+                    breakdown = learning.get("breakdown", {})
+
+                    # Color code reward
+                    if reward >= 0.8:
+                        reward_color = "🟢"
+                        reward_text = "Excellent"
+                    elif reward >= 0.6:
+                        reward_color = "🟡"
+                        reward_text = "Good"
+                    else:
+                        reward_color = "🔴"
+                        reward_text = "Needs Improvement"
+
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Overall Reward", f"{reward_color} {reward:.3f}", delta=reward_text)
+                    with col2:
+                        st.metric("Strategy Used", strategy)
+                    with col3:
+                        status_icon = "✅" if success else "⚠️"
+                        st.metric("Learning Success", status_icon)
+
+                    # Reward breakdown with progress bars
+                    if breakdown:
+                        st.markdown("**📊 Reward Breakdown:**")
+                        breakdown_cols = st.columns(4)
+
+                        success_score = breakdown.get("success", 0.0)
+                        efficiency_score = breakdown.get("efficiency", 0.0)
+                        quality_score = breakdown.get("quality", 0.0)
+                        speed_score = breakdown.get("speed", 0.0)
+
+                        with breakdown_cols[0]:
+                            st.markdown(f"**✅ Success**: {success_score:.3f}")
+                            st.progress(min(success_score, 1.0))
+                            st.caption("Tests passed")
+
+                        with breakdown_cols[1]:
+                            st.markdown(f"**⚡ Efficiency**: {efficiency_score:.3f}")
+                            st.progress(min(efficiency_score, 1.0))
+                            st.caption("Fewer retries")
+
+                        with breakdown_cols[2]:
+                            st.markdown(f"**💎 Quality**: {quality_score:.3f}")
+                            st.progress(min(quality_score, 1.0))
+                            st.caption("Code conciseness")
+
+                        with breakdown_cols[3]:
+                            st.markdown(f"**🚀 Speed**: {speed_score:.3f}")
+                            st.progress(min(speed_score, 1.0))
+                            st.caption("Generation time")
+
+                    # Store learning history in session state
+                    if "codegen_learning_history" not in st.session_state:
+                        st.session_state.codegen_learning_history = {
+                            "timestamps": [],
+                            "rewards": [],
+                            "strategies": [],
+                            "success_scores": [],
+                            "efficiency_scores": [],
+                            "quality_scores": [],
+                            "speed_scores": [],
+                            "languages": [],
+                        }
+
+                    st.session_state.codegen_learning_history["timestamps"].append(datetime.now())
+                    st.session_state.codegen_learning_history["rewards"].append(reward)
+                    st.session_state.codegen_learning_history["strategies"].append(strategy)
+                    st.session_state.codegen_learning_history["success_scores"].append(success_score)
+                    st.session_state.codegen_learning_history["efficiency_scores"].append(efficiency_score)
+                    st.session_state.codegen_learning_history["quality_scores"].append(quality_score)
+                    st.session_state.codegen_learning_history["speed_scores"].append(speed_score)
+                    st.session_state.codegen_learning_history["languages"].append(result.get('language', 'python'))
+
                 st.markdown("\n**Continue generating code or type 'q'(quit) to exit Code mode.**")
 
                 # Collect Code metrics to dashboard
@@ -2853,10 +3200,11 @@ elif current_mode == "general" and prompt and prompt != "__MODE_ACTIVATED__":
                     st.markdown(local_reply)
                     append_chat_history("assistant", local_reply)
                 else:
-                    client = OpenAI(
-                        api_key=api_key,
-                        base_url=os.getenv("OPENAI_BASE_URL")
-                    )
+                    client_kwargs = {"api_key": api_key}
+                    base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+                    if base_url:
+                        client_kwargs["base_url"] = base_url
+                    client = OpenAI(**client_kwargs)
 
                     # Use LLM to analyze intent
                     intent_prompt = f"""Analyze the user's request and classify it into one of these categories:
@@ -2876,7 +3224,7 @@ Respond with ONLY ONE WORD: rag, trip, code, or general"""
                     ])
 
                     intent_response = client.chat.completions.create(
-                        model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo-0125"),
+                        model=os.getenv("OPENAI_MODEL", "Gpt4o"),
                         messages=intent_messages,
                         temperature=0,
                         max_tokens=10

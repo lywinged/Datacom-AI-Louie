@@ -22,8 +22,8 @@ MODEL_ENCODINGS = {
     # OpenAI models
     "gpt-4": "cl100k_base",
     "gpt-4-turbo": "cl100k_base",
-    "gpt-4o": "o200k_base",
-    "gpt-4o-mini": "o200k_base",
+    "Gpt4o": "o200k_base",
+    "Gpt4o-mini": "o200k_base",
     "gpt-3.5-turbo": "cl100k_base",
     "text-embedding-ada-002": "cl100k_base",
     "text-embedding-3-small": "cl100k_base",
@@ -199,7 +199,7 @@ class TokenCounter:
         Pricing reference (2024):
         - GPT-4: $0.03/1K prompt, $0.06/1K completion
         - GPT-4 Turbo: $0.01/1K prompt, $0.03/1K completion
-        - GPT-4o: $0.005/1K prompt, $0.015/1K completion
+        - Gpt4o: $0.005/1K prompt, $0.015/1K completion
         - GPT-3.5 Turbo: $0.0005/1K prompt, $0.0015/1K completion
 
         Args:
@@ -212,8 +212,8 @@ class TokenCounter:
         pricing = {
             "gpt-4": {"prompt": 0.03, "completion": 0.06},
             "gpt-4-turbo": {"prompt": 0.01, "completion": 0.03},
-            "gpt-4o": {"prompt": 0.005, "completion": 0.015},
-            "gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},
+            "Gpt4o": {"prompt": 0.005, "completion": 0.015},
+            "Gpt4o-mini": {"prompt": 0.00015, "completion": 0.0006},
             "gpt-3.5-turbo": {"prompt": 0.0005, "completion": 0.0015},
             "claude-3-opus": {"prompt": 0.015, "completion": 0.075},
             "claude-3-sonnet": {"prompt": 0.003, "completion": 0.015},

@@ -28,15 +28,30 @@ logger = logging.getLogger(__name__)
 class CodeAssistant:
     """Self-healing code assistant with automated testing"""
 
-    def __init__(self):
+    def __init__(self, enable_learning: bool = True):
         """Initialize code assistant with OpenAI client"""
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is required")
 
-        self.client = AsyncOpenAI(api_key=api_key)
-        self.model_name = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+        # Initialize OpenAI client with optional base URL
+        client_kwargs = {"api_key": api_key}
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+        if base_url:
+            client_kwargs["base_url"] = base_url
+
+        self.client = AsyncOpenAI(**client_kwargs)
+        self.model_name = os.getenv("OPENAI_MODEL", "Gpt4o")
         self.token_counter = get_token_counter()
+
+        # Initialize learning system
+        self.enable_learning = enable_learning
+        self.learner = None
+        if enable_learning:
+            from backend.services.codegen_learn import CodeGenAdapter
+            memory_path = os.getenv("CODEGEN_MEMORY_PATH", "data/codegen_experiences.jsonl")
+            self.learner = CodeGenAdapter(memory_path)
+            logger.info(f"🎓 Code learning system enabled (memory: {memory_path})")
 
         logger.info(f"✅ CodeAssistant initialized with model: {self.model_name}")
 
@@ -57,6 +72,23 @@ class CodeAssistant:
         total_cost_usd = 0.0
 
         logger.info(f"💻 Generating {request.language} code: {request.task[:100]}...")
+
+        # LEARNING INTEGRATION: Choose strategy before generation
+        strategy = None
+        signature = None
+        if self.enable_learning and self.learner:
+            language_str = str(request.language.value) if hasattr(request.language, 'value') else str(request.language)
+            test_framework_str = str(request.test_framework.value) if request.test_framework and hasattr(request.test_framework, 'value') else None
+
+            ctx = self.learner.choose(
+                language=language_str,
+                task=request.task,
+                test_framework=test_framework_str
+            )
+            signature = ctx["signature"]
+            strategy = ctx["strategy"]
+
+            logger.info(f"🎓 Selected strategy: {strategy.get('name', 'unknown')}")
 
         retry_attempts: List[RetryAttempt] = []
         current_code = None
@@ -204,6 +236,26 @@ class CodeAssistant:
             f"with {len(retry_attempts)} retries, tests passed: {current_test_result.passed}"
         )
 
+        # LEARNING INTEGRATION: Record outcome after generation
+        learning_result = None
+        if self.enable_learning and self.learner and strategy and signature:
+            code_length = len(current_code.split('\n')) if current_code else 0
+
+            learning_result = self.learner.record(
+                signature=signature,
+                strategy=strategy,
+                test_passed=current_test_result.passed,
+                retry_count=len(retry_attempts),
+                max_retries=request.max_retries,
+                generation_time_ms=generation_time_ms,
+                code_length=code_length,
+                estimated_loc=signature.estimated_loc,
+                token_cost_usd=cost_usd,
+            )
+
+            logger.info(f"🎓 Learning recorded: success={learning_result['success']}, "
+                       f"reward={learning_result['reward']:.3f}, strategy={learning_result['strategy']}")
+
         initial_plan_summary = None
         initial_plan_steps: List[str] = []
         if initial_plan:
@@ -233,6 +285,7 @@ class CodeAssistant:
             initial_plan_summary=initial_plan_summary,
             initial_plan_steps=initial_plan_steps,
             samples=final_samples,
+            learning=learning_result,
         )
 
     async def _generate_initial_code(

@@ -248,10 +248,13 @@ def llm_extract_constraints(text: str, existing: Optional[TripConstraints] = Non
             print("⚠️  OPENAI_API_KEY not set, skipping LLM extraction")
             return existing or TripConstraints()
 
-        client = OpenAI(
-            api_key=api_key,
-            base_url=os.getenv("OPENAI_BASE_URL")
-        )
+        # Initialize OpenAI client with optional base URL
+        client_kwargs = {"api_key": api_key}
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+        if base_url:
+            client_kwargs["base_url"] = base_url
+
+        client = OpenAI(**client_kwargs)
 
         existing_json = existing.model_dump() if existing else {}
 
@@ -290,7 +293,7 @@ Rules:
 - ONLY return the JSON object, no explanation"""
 
         response = client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo-0125"),
+            model=os.getenv("OPENAI_MODEL", "Gpt4o"),
             messages=[{"role": "user", "content": prompt}],
             temperature=0,
             max_tokens=200

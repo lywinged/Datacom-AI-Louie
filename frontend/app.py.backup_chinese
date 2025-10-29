@@ -227,8 +227,8 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8888").rstrip("/")
 MODEL_PRICING = {
     "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.0020},
     "gpt-3.5-turbo-0125": {"prompt": 0.0015, "completion": 0.0020},
-    "gpt-4o": {"prompt": 0.005, "completion": 0.015},
-    "gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},
+    "Gpt4o": {"prompt": 0.005, "completion": 0.015},
+    "Gpt4o-mini": {"prompt": 0.00015, "completion": 0.0006},
 }
 
 CURRENCY_TO_NZD = {

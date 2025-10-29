@@ -2,7 +2,7 @@
 Task 3.1: Conversational Chat Core
 
 Features:
-- Streaming chat with GPT-4o
+- Streaming chat with Gpt4o
 - Persistent conversation history (last N messages)
 - Token counting and cost tracking
 - Latency monitoring
@@ -31,9 +31,14 @@ class ChatService:
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is required")
 
-        # Initialize OpenAI client
-        self.client = AsyncOpenAI(api_key=api_key)
-        self.model_name = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+        # Initialize OpenAI client with optional base URL
+        client_kwargs = {"api_key": api_key}
+        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_BASE_URL")
+        if base_url:
+            client_kwargs["base_url"] = base_url
+
+        self.client = AsyncOpenAI(**client_kwargs)
+        self.model_name = os.getenv("OPENAI_MODEL", "Gpt4o")
 
         # Initialize conversation history
         self.conversation_history: List[ChatMessage] = []
@@ -109,7 +114,7 @@ class ChatService:
             completion_tokens = response.usage.completion_tokens
             total_tokens = response.usage.total_tokens
 
-            # Calculate cost (GPT-4o pricing)
+            # Calculate cost (Gpt4o pricing)
             # Input: $2.50 / 1M tokens, Output: $10.00 / 1M tokens
             cost_usd = (
                 (prompt_tokens / 1_000_000) * 2.50 +

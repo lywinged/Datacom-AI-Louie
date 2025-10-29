@@ -421,6 +421,7 @@ class PlanningAgent:
                 }
 
             # LEARNING INTEGRATION: Record results after planning
+            learning_result = None
             if self.enable_learning and self.learner and strategy and signature:
                 budget_nzd = self._convert_to_nzd(
                     request.constraints.budget if request.constraints else None,
@@ -433,7 +434,13 @@ class PlanningAgent:
                     plan_cost=total_cost_nzd,
                     budget_nzd=budget_nzd,
                     tool_errors=tool_errors_count,
-                    satisfaction_proxy=constraint_satisfaction_score
+                    satisfaction_proxy=constraint_satisfaction_score,
+                    tool_calls=[{
+                        "tool_name": tc.tool_name,
+                        "result": tc.result,
+                        "error": tc.error,
+                        "retry_count": 0  # Could be enhanced to track actual retries
+                    } for tc in tool_calls_made]
                 )
 
                 logger.info(f"🎓 Learning recorded: success={learning_result['success']}, "
@@ -464,6 +471,7 @@ class PlanningAgent:
                 strategy_used=strategy,
                 llm_token_usage=llm_token_usage_dict,
                 llm_cost_usd=llm_total_cost_usd if llm_token_usage_dict else 0.0,
+                learning=learning_result,
             )
 
         except Exception as e:

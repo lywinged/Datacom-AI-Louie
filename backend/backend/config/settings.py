@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     # Generic OpenAI-compatible settings (e.g. custom gateways, OpenAI SaaS)
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_BASE_URL: Optional[str] = os.getenv("OPENAI_BASE_URL")
-    # Use gpt-3.5-turbo-0125 as default since it's the only accessible model
-    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo-0125")
+    # Use Gpt4o as default model
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "Gpt4o")
 
     # Database
     DATABASE_URL: str = os.getenv(
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     CHAT_TIMEOUT: int = 30
 
     # Cost Configuration (USD per 1K tokens)
-    # GPT-4o pricing
+    # Gpt4o pricing
     PROMPT_COST_PER_1K: float = 0.005  # $0.005 per 1K prompt tokens
     COMPLETION_COST_PER_1K: float = 0.015  # $0.015 per 1K completion tokens
 

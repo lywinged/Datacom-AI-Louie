@@ -92,7 +92,7 @@ def _initialize_metrics():
     knowledge_cold_chunks_gauge.set(0)
 
     # Initialize LLM metrics with common models
-    common_models = ["gpt-4", "gpt-4o", "gpt-3.5-turbo", "claude-3-5-sonnet", "deepseek-chat", "deepseek-v3", "deepseek-v3-250324", "deepseek-v3-1-terminus"]
+    common_models = ["gpt-4", "Gpt4o", "gpt-3.5-turbo", "claude-3-5-sonnet", "deepseek-chat", "deepseek-v3", "deepseek-v3-250324", "deepseek-v3-1-terminus"]
     common_endpoints = ["chat", "story_chat", "embedding"]
     for model in common_models:
         llm_token_usage_counter.labels(model=model, token_type="prompt")._value.set(0)

@@ -103,6 +103,10 @@ class CodeResponse(BaseModel):
         default=None,
         description="Sample evaluations from the final successful run",
     )
+    learning: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Learning system feedback with reward, strategy, and breakdown",
+    )
 
 
 class ProgressUpdate(BaseModel):

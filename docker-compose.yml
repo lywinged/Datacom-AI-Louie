@@ -41,6 +41,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend-api
+    env_file:
+      - .env
     ports:
       - "8888:8888"
     volumes:
@@ -48,8 +50,8 @@ services:
       - ./data:/app/data
       - ./chat_sessions.sqlite3:/app/chat_sessions.sqlite3
     environment:
-      - QDRANT_HOST=${QDRANT_HOST:-qdrant}
-      - QDRANT_PORT=${QDRANT_PORT:-6333}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
       - QDRANT_COLLECTION=${QDRANT_COLLECTION:-assessment_docs_minilm}
       - ONNX_EMBED_MODEL_PATH=/app/models/minilm-embed-int8
       - ONNX_RERANK_MODEL_PATH=/app/models/minilm-reranker-onnx
@@ -57,8 +59,9 @@ services:
       - RERANK_FALLBACK_MODEL_PATH=/app/models/minilm-reranker-onnx
       - ENABLE_REMOTE_INFERENCE=false
       - USE_ONNX_INFERENCE=${USE_ONNX_INFERENCE:-true}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-3.5-turbo-0125}
+      - OPENAI_API_KEY=sk-zM2MxgXhXnusmExHx1sKyw
+      - OPENAI_BASE_URL=https://aiunifier.wonderfulrock-83cb33fd.australiaeast.azurecontainerapps.io
+      - OPENAI_MODEL=Gpt4o
       - QDRANT_SEED_PATH=${QDRANT_SEED_PATH}
       - QDRANT_SEED_VECTOR_SIZE=${QDRANT_SEED_VECTOR_SIZE:-384}
       - QDRANT_SEED_TARGET_COUNT=${QDRANT_SEED_TARGET_COUNT:-138000}
@@ -93,7 +96,9 @@ services:
       - BACKEND_URL=http://backend:8888
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_KEY=sk-zM2MxgXhXnusmExHx1sKyw
+      - OPENAI_BASE_URL=https://aiunifier.wonderfulrock-83cb33fd.australiaeast.azurecontainerapps.io
+      - OPENAI_MODEL=Gpt4o
     depends_on:
       - backend
     restart: unless-stopped

@@ -124,6 +124,7 @@ class PlanResponse(BaseModel):
         description="Aggregated LLM token usage {'prompt': int, 'completion': int, 'total': int}",
     )
     llm_cost_usd: Optional[float] = Field(default=None, description="Estimated LLM cost in USD for planning")
+    learning: Optional[Dict[str, Any]] = Field(None, description="Learning system feedback with reward and breakdown")
 
 
 class AgentMetrics(BaseModel):

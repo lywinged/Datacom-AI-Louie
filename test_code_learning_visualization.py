@@ -96,6 +96,7 @@ def call_planning_agent(request: Dict[str, Any], api_url: str = "http://localhos
 def extract_metrics(response: Dict[str, Any]) -> Dict[str, Any]:
     """Extract learning metrics from agent response"""
     learning = response.get("learning", {})
+    itinerary = response.get("itinerary", {})
 
     return {
         "reward": learning.get("reward", 0.0),
@@ -104,12 +105,12 @@ def extract_metrics(response: Dict[str, Any]) -> Dict[str, Any]:
         "quality_score": learning.get("breakdown", {}).get("quality_score", 0.0),
         "reliability_score": learning.get("breakdown", {}).get("reliability_score", 0.0),
         "strategy": response.get("strategy_used", {}),
-        "tool_errors": response.get("metadata", {}).get("tool_errors", 0),
-        "total_cost": response.get("metadata", {}).get("total_cost_nzd", 0.0),
+        "tool_errors": response.get("tool_errors_count", 0),
+        "total_cost": itinerary.get("total_cost_nzd", 0.0),
     }
 
 
-def run_experiments(n: int = 100, output_dir: str = "/Users/yilu/Downloads/ai_assessment_project/learning_results") -> Dict[str, Any]:
+def run_experiments(n: int = 100, output_dir: str = "eval") -> Dict[str, Any]:
     """Run n automated trip planning experiments"""
     print(f"🚀 Starting {n} automated trip planning experiments...")
 
@@ -173,7 +174,7 @@ def run_experiments(n: int = 100, output_dir: str = "/Users/yilu/Downloads/ai_as
     }
 
 
-def visualize_learning(results: List[Dict[str, Any]], output_dir: str = "/Users/yilu/Downloads/ai_assessment_project/learning_results"):
+def visualize_learning(results: List[Dict[str, Any]], output_dir: str = "eval"):
     """Create comprehensive learning visualizations"""
     print("\n📊 Generating visualizations...")
 
@@ -358,7 +359,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Automated Learning Visualization Tool")
     parser.add_argument("--iterations", "-n", type=int, default=100, help="Number of test iterations (default: 100)")
-    parser.add_argument("--output-dir", "-o", type=str, default="/Users/yilu/Downloads/ai_assessment_project/learning_results", help="Output directory")
+    parser.add_argument("--output-dir", "-o", type=str, default="eval", help="Output directory")
     parser.add_argument("--api-url", type=str, default="http://localhost:8888/api/agent/plan", help="Trip planning agent API URL")
     parser.add_argument("--skip-experiments", action="store_true", help="Skip experiments and only visualize existing results")
     parser.add_argument("--results-file", type=str, help="Path to existing results file for visualization")
