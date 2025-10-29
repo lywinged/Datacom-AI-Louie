@@ -20,10 +20,12 @@ That's all!🎉
 
 - **Task 3.1:** Conversational Chat with streaming 
 - **Task 3.2:** High-Performance RAG QA with Qdrant vector database
-                150 books 60MB, gen-Q&A pairs for testing keyword, metadata(Binary Bag-of-Words), semantic(ROUGH) performance.
+                150 books 60MB, gen-Q&A pairs for testing metadata,keyword(EM), semantic(ROUGE-L)performance.
                 (Median: 140-230ms)
+Data: Gutenberg_corpus https://www.gutenberg.org/cache/epub/feeds/
 Command:    
         python ai-assessment-deploy/scripts/eval_rag_performance_task3_2.py
+
 EVALUATION SUMMARY
 model: minilm-embed-int8          minilm-reranker-int8
 🎯 Top-5 Accuracy: 73.3%
@@ -33,7 +35,7 @@ model: minilm-embed-int8          minilm-reranker-int8
 🎲 Random Seed:   42
 📚 Category Breakdown:
 
-   METADATA:
+   METADATA: （Metadata-based Retrieval）
      Total: 20 questions
      Top-5 Accuracy: 50.0%
      Top-1 Accuracy: 35.0%
@@ -42,7 +44,7 @@ model: minilm-embed-int8          minilm-reranker-int8
      Vector Time    - Mean: 5.6ms, Median: 5.6ms
      Rerank Time    - Mean: 180.3ms, Median: 172.3ms
 
-   KEYWORD:
+   KEYWORD: （EM-Exact Match）
      Total: 20 questions
      Top-5 Accuracy: 90.0%
      Top-1 Accuracy: 60.0%
@@ -51,7 +53,7 @@ model: minilm-embed-int8          minilm-reranker-int8
      Vector Time    - Mean: 6.6ms, Median: 6.0ms
      Rerank Time    - Mean: 215.0ms, Median: 196.3ms
 
-   SEMANTIC:
+   SEMANTIC: （ROUGE-L）
      Total: 20 questions
      Top-5 Accuracy: 80.0%
      Top-1 Accuracy: 40.0%
