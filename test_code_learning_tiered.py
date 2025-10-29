@@ -296,25 +296,32 @@ def run_single_test(test_case: Dict[str, Any], tier_icon: str, test_num: int, to
         }
 
 
-def print_summary(results: List[Dict[str, Any]]):
-    """Print comprehensive test summary with tier analysis"""
+def print_summary(results: List[Dict[str, Any]]) -> str:
+    """Print comprehensive test summary with tier analysis and return summary text"""
 
-    print("\n" + "="*80)
-    print("💻 🎓 CODE GENERATION LEARNING - TIERED TEST SUMMARY")
-    print("="*80)
+    summary_lines = []
+
+    def plog(text):
+        """Print and log to summary"""
+        print(text)
+        summary_lines.append(text)
+
+    plog("\n" + "="*80)
+    plog("💻 🎓 CODE GENERATION LEARNING - TIERED TEST SUMMARY")
+    plog("="*80)
 
     total = len(results)
     passed = sum(1 for r in results if r.get("passed"))
     failed = total - passed
 
     # Overall statistics
-    print(f"\n📊 Overall Statistics:")
-    print(f"   Total Tests: {total}")
-    print(f"   Passed: {passed} ({passed/total*100:.1f}%)")
-    print(f"   Failed: {failed} ({failed/total*100:.1f}%)")
+    plog(f"\n📊 Overall Statistics:")
+    plog(f"   Total Tests: {total}")
+    plog(f"   Passed: {passed} ({passed/total*100:.1f}%)")
+    plog(f"   Failed: {failed} ({failed/total*100:.1f}%)")
 
     # Tier breakdown
-    print(f"\n🎯 Results by Difficulty Tier:")
+    plog(f"\n🎯 Results by Difficulty Tier:")
     for difficulty in ["simple", "medium", "complex"]:
         tier_results = [r for r in results if r.get("difficulty") == difficulty]
         if tier_results:
@@ -331,39 +338,39 @@ def print_summary(results: List[Dict[str, Any]]):
             tier_rewards = [r.get("reward", 0) for r in tier_results if r.get("reward") is not None]
             avg_reward = statistics.mean(tier_rewards) if tier_rewards else 0
 
-            print(f"\n   {tier_icon} {difficulty.upper()}: {tier_passed}/{tier_total} ({tier_rate:.1f}%)")
-            print(f"      Avg Retries: {avg_retries:.2f}")
-            print(f"      Avg Reward: {avg_reward:.3f}")
+            plog(f"\n   {tier_icon} {difficulty.upper()}: {tier_passed}/{tier_total} ({tier_rate:.1f}%)")
+            plog(f"      Avg Retries: {avg_retries:.2f}")
+            plog(f"      Avg Reward: {avg_reward:.3f}")
 
     # Time statistics
     total_time = sum(r.get("total_time_s", 0) for r in results)
     avg_time = total_time / total if total > 0 else 0
-    print(f"\n⏱️  Time Statistics:")
-    print(f"   Total Time: {total_time:.1f}s ({total_time/60:.1f} minutes)")
-    print(f"   Average Time per Test: {avg_time:.1f}s")
+    plog(f"\n⏱️  Time Statistics:")
+    plog(f"   Total Time: {total_time:.1f}s ({total_time/60:.1f} minutes)")
+    plog(f"   Average Time per Test: {avg_time:.1f}s")
 
     # Learning statistics
     rewards = [r.get("reward", 0) for r in results if r.get("reward") is not None]
     if rewards:
         avg_reward = statistics.mean(rewards)
         median_reward = statistics.median(rewards)
-        print(f"\n🎓 Learning Statistics:")
-        print(f"   Average Reward: {avg_reward:.3f}")
-        print(f"   Median Reward: {median_reward:.3f}")
-        print(f"   Best Reward: {max(rewards):.3f}")
-        print(f"   Worst Reward: {min(rewards):.3f}")
+        plog(f"\n🎓 Learning Statistics:")
+        plog(f"   Average Reward: {avg_reward:.3f}")
+        plog(f"   Median Reward: {median_reward:.3f}")
+        plog(f"   Best Reward: {max(rewards):.3f}")
+        plog(f"   Worst Reward: {min(rewards):.3f}")
 
     # Retry statistics
     retries_data = [r.get("retries", 0) for r in results if r.get("retries") is not None]
     if retries_data:
         avg_retries = statistics.mean(retries_data)
         zero_retry = sum(1 for r in retries_data if r == 0)
-        print(f"\n⚡ Efficiency Statistics:")
-        print(f"   Average Retries: {avg_retries:.2f}")
-        print(f"   First-Try Success: {zero_retry}/{len(retries_data)} ({zero_retry/len(retries_data)*100:.1f}%)")
+        plog(f"\n⚡ Efficiency Statistics:")
+        plog(f"   Average Retries: {avg_retries:.2f}")
+        plog(f"   First-Try Success: {zero_retry}/{len(retries_data)} ({zero_retry/len(retries_data)*100:.1f}%)")
 
     # Strategy distribution by tier
-    print(f"\n🧠 Strategy Distribution by Tier:")
+    plog(f"\n🧠 Strategy Distribution by Tier:")
     for difficulty in ["simple", "medium", "complex"]:
         tier_results = [r for r in results if r.get("difficulty") == difficulty]
         if tier_results:
@@ -375,10 +382,10 @@ def print_summary(results: List[Dict[str, Any]]):
                     tier_strategies[strat] = tier_strategies.get(strat, 0) + 1
 
             if tier_strategies:
-                print(f"\n   {tier_icon} {difficulty.upper()}:")
+                plog(f"\n   {tier_icon} {difficulty.upper()}:")
                 for strategy, count in sorted(tier_strategies.items(), key=lambda x: x[1], reverse=True):
                     percentage = count / len(tier_results) * 100
-                    print(f"      {strategy}: {count} ({percentage:.1f}%)")
+                    plog(f"      {strategy}: {count} ({percentage:.1f}%)")
 
     # Overall strategy distribution
     strategies = {}
@@ -388,13 +395,13 @@ def print_summary(results: List[Dict[str, Any]]):
             strategies[strat] = strategies.get(strat, 0) + 1
 
     if strategies:
-        print(f"\n🎯 Overall Strategy Distribution:")
+        plog(f"\n🎯 Overall Strategy Distribution:")
         for strategy, count in sorted(strategies.items(), key=lambda x: x[1], reverse=True):
             percentage = count / len(results) * 100
-            print(f"   {strategy}: {count} times ({percentage:.1f}%)")
+            plog(f"   {strategy}: {count} times ({percentage:.1f}%)")
 
     # Language breakdown
-    print(f"\n🔤 Results by Language:")
+    plog(f"\n🔤 Results by Language:")
     languages = {}
     for r in results:
         lang = r.get("language", "unknown")
@@ -406,19 +413,19 @@ def print_summary(results: List[Dict[str, Any]]):
 
     for language, stats in sorted(languages.items()):
         rate = stats["passed"] / stats["total"] * 100
-        print(f"   {language}: {stats['passed']}/{stats['total']} ({rate:.1f}%)")
+        plog(f"   {language}: {stats['passed']}/{stats['total']} ({rate:.1f}%)")
 
     # Errors
     errors = [r for r in results if r.get("error")]
     if errors:
-        print(f"\n❌ Errors ({len(errors)}):")
+        plog(f"\n❌ Errors ({len(errors)}):")
         for err in errors[:5]:  # Show first 5 errors
-            print(f"   {err['tier_icon']} Test {err['test_num']} ({err['difficulty']}): {err['error'][:60]}")
+            plog(f"   {err['tier_icon']} Test {err['test_num']} ({err['difficulty']}): {err['error'][:60]}")
         if len(errors) > 5:
-            print(f"   ... and {len(errors) - 5} more errors")
+            plog(f"   ... and {len(errors) - 5} more errors")
 
     # Learning objectives
-    print(f"\n🎯 Learning Objectives Check:")
+    plog(f"\n🎯 Learning Objectives Check:")
 
     # Check if system selects appropriate strategies for difficulty
     simple_results = [r for r in results if r.get("difficulty") == "simple"]
@@ -431,12 +438,14 @@ def print_summary(results: List[Dict[str, Any]]):
         simple_rate = simple_fast / len(simple_results) * 100 if simple_results else 0
         complex_rate = complex_quality / len(complex_results) * 100 if complex_results else 0
 
-        print(f"   ✓ Fast strategies for simple tasks: {simple_fast}/{len(simple_results)} ({simple_rate:.1f}%)")
-        print(f"   ✓ Quality strategies for complex tasks: {complex_quality}/{len(complex_results)} ({complex_rate:.1f}%)")
+        plog(f"   ✓ Fast strategies for simple tasks: {simple_fast}/{len(simple_results)} ({simple_rate:.1f}%)")
+        plog(f"   ✓ Quality strategies for complex tasks: {complex_quality}/{len(complex_results)} ({complex_rate:.1f}%)")
 
-    print("\n" + "="*80)
-    print("🎉 Tiered test suite completed!")
-    print("="*80)
+    plog("\n" + "="*80)
+    plog("🎉 Tiered test suite completed!")
+    plog("="*80)
+
+    return "\n".join(summary_lines)
 
 
 def main():
@@ -509,13 +518,21 @@ def main():
 
     # Print summary
     if results:
-        print_summary(results)
+        summary_text = print_summary(results)
 
         # Save results to file
-        output_file = f"eval/code_learning_tiered_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        output_file = f"eval/code_learning_tiered_results_{timestamp}.json"
+        summary_file = f"eval/code_learning_tiered_summary_{timestamp}.txt"
+
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2, default=str)
+
+        with open(summary_file, 'w') as f:
+            f.write(summary_text)
+
         print(f"\n💾 Results saved to: {output_file}")
+        print(f"💾 Summary saved to: {summary_file}")
     else:
         print("\n❌ No tests completed")
 

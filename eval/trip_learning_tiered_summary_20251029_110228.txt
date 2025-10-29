@@ -1,0 +1,29 @@
+
+================================================================================
+📈 FINAL LEARNING REPORT
+================================================================================
+
+🎯 Learning Objectives:
+  ⚠️ budget_optimization            0.514/0.850 ( 60.5%)
+  ⚠️ duration_handling              0.477/0.800 ( 59.7%)
+  🔶 tool_order_optimization        0.792/0.900 ( 88.1%)
+  ✅ local_vs_international         0.842/0.800 (100.0%)
+  ⚠️ extreme_constraints            0.473/0.700 ( 67.6%)
+  ✅ mixed_complexity               0.785/0.750 (100.0%)
+
+📊 Category Performance:
+  duration_handling         | Tests:  4 | Success: 50.0% | Reward:0.477
+  local_vs_international    | Tests:  6 | Success: 83.3% | Reward:0.842
+  budget_optimization       | Tests:  4 | Success: 25.0% | Reward:0.514
+  extreme_constraints       | Tests:  3 | Success: 33.3% | Reward:0.473
+  mixed_complexity          | Tests:  3 | Success: 66.7% | Reward:0.785
+
+🔧 Top Tool Orders:
+  1. weather->flights->attractions            | Count: 10 | Reward:0.792
+  2. attractions->weather->flights            | Count:  4 | Reward:0.773
+  3. flights->weather->attractions            | Count:  3 | Reward:0.591
+  4. unknown                                  | Count:  3 | Reward:0.000
+
+✅ Results saved to eval/enhanced_learning_20251029_110228.json
+✅ Summary saved to eval/enhanced_learning_summary_20251029_110228.txt
+================================================================================

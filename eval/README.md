@@ -1,224 +1,213 @@
-# Enhanced Learning Test Results
+# 📊 eval/ - Test Results and Evaluation Data
 
-This directory contains automated learning test results from the enhanced learning system.
+This directory contains all test results and evaluation outputs from the learning system tests.
 
-## Directory Structure
+## 📁 File Types
 
-```
-eval/
-├── README.md                                    # This file
-├── enhanced_learning_YYYYMMDD_HHMMSS.json      # Test results (one per run)
-└── [future visualization files]                 # Charts and graphs
-```
+### Trip Planning Learning Tests
 
-## File Format
+**From `test_trip_learning_tiered.py`:**
+- `enhanced_learning_YYYYMMDD_HHMMSS.json` - Complete test results with scenarios, results, and dashboard data
+- `enhanced_learning_summary_YYYYMMDD_HHMMSS.txt` - Human-readable summary report with learning objectives, category performance, and top tool orders
 
-Each test run generates a JSON file with the following structure:
+**From `test_trip_learning_visualization.py`:**
+- `learning_experiment_YYYYMMDD_HHMMSS.json` - Experiment data with 100 iterations
+- `learning_visualization_YYYYMMDD_HHMMSS.png` - Learning curve visualization charts
+- `intermediate_results.jsonl` - Line-by-line intermediate results
+- `learning_summary.json` - Overall learning summary statistics
+
+### Code Generation Learning Tests
+
+**From `test_code_learning_tiered.py`:**
+- `code_learning_tiered_results_YYYYMMDD_HHMMSS.json` - Complete test results for all difficulty tiers (🟢🟡🔴)
+- `code_learning_tiered_summary_YYYYMMDD_HHMMSS.txt` - Human-readable summary with tier analysis, strategy distribution, and learning metrics
+
+**From `test_code_learning_visualization.py`:**
+- `learning_experiment_YYYYMMDD_HHMMSS.json` - Experiment data
+- `learning_visualization_YYYYMMDD_HHMMSS.png` - Learning curve charts
+
+---
+
+## 📋 File Format Details
+
+### JSON Result Files (*.json)
+
+Complete structured data for programmatic analysis:
 
 ```json
 {
-  "scenarios": [
-    {
-      "name": "scenario_name",
-      "category": "budget_optimization | duration_handling | local_vs_international | extreme_constraints | mixed_complexity",
-      "origin": "City",
-      "destination": "City",
-      "days": 3,
-      "budget_nzd": 1500,
-      "preferences": ["adventure", "culture"],
-      "expected_difficulty": "easy | medium | hard | extreme",
-      "learning_focus": "Description of what this scenario tests"
-    }
-  ],
-  "results": [
-    {
-      "iteration": 1,
-      "scenario": {...},
-      "response": {
-        "learning": {
-          "success": true,
-          "reward": 0.970,
-          "breakdown": {
-            "budget_score": 1.00,
-            "quality_score": 0.90,
-            "reliability_score": 1.00
-          }
-        },
-        "strategy_used": {
-          "tool_order": "attractions->flights->weather",
-          "model_temp": 0.6,
-          "attractions_k": 50
-        },
-        "itinerary": {...},
-        "tool_calls": [...],
-        "planning_time_ms": 7500
-      },
-      "elapsed": 8.5
-    }
-  ],
-  "dashboard": {
-    "learning_objectives": {
-      "budget_optimization": {
-        "target": 0.85,
-        "current": 0.808,
-        "progress": 95.1
-      },
-      ...
-    },
-    "category_performance": {
-      "budget_optimization": {
-        "total": 6,
-        "success": 4,
-        "avg_reward": 0.808,
-        "rewards": [0.45, 1.0, 0.95, ...]
-      },
-      ...
-    },
-    "difficulty_performance": {
-      "easy": {
-        "total": 12,
-        "success": 11,
-        "avg_reward": 0.95
-      },
-      ...
-    },
-    "tool_order_performance": {
-      "attractions->flights->weather": {
-        "count": 27,
-        "avg_reward": 0.837,
-        "rewards": [0.97, 0.85, ...]
-      },
-      ...
-    }
+  "test_num": 1,
+  "difficulty": "simple",
+  "language": "python",
+  "task": "Write a function to check if a number is even",
+  "passed": true,
+  "retries": 0,
+  "gen_time_ms": 9707,
+  "total_time_s": 9.7,
+  "strategy": "fast_pragmatic",
+  "reward": 0.940,
+  "learning_success": true,
+  "breakdown": {
+    "success": 1.000,
+    "efficiency": 1.000,
+    "quality": 1.000,
+    "speed": 0.400
   }
 }
 ```
 
-## Learning Objectives
+### Summary Text Files (*_summary_*.txt)
 
-The system tracks 6 learning objectives:
+Human-readable reports with formatted output:
 
-1. **Budget Optimization** (Target: 0.85)
-   - Learn to optimize costs across different budget ranges
-   - Scenarios: $400-$5000 NZD budgets
-
-2. **Duration Handling** (Target: 0.80)
-   - Adapt to different trip lengths
-   - Scenarios: 2-14 day trips
-
-3. **Tool Order Optimization** (Target: 0.90)
-   - Find optimal tool calling sequence
-   - Best: `attractions->flights->weather`
-
-4. **Local vs International** (Target: 0.80)
-   - Differentiate local and international travel strategies
-   - Scenarios: NZ cities, Australia, Asia
-
-5. **Extreme Constraints** (Target: 0.70)
-   - Handle extreme budget/duration constraints
-   - Scenarios: Ultra-low budget, ultra-short/long duration
-
-6. **Mixed Complexity** (Target: 0.75)
-   - Test strategy generalization
-   - Scenarios: Random combinations
-
-## Performance Metrics
-
-### Reward Breakdown
-Each test receives a reward (0.0-1.0) composed of:
-- **Budget Score (40%)**: How well the plan stays within budget
-- **Quality Score (30%)**: Quality of attractions and experiences
-- **Reliability Score (30%)**: Tool success rate, no errors
-
-### Success Criteria
-- **Success**: Reward > 0.5
-- **Partial Success**: 0.3 < Reward ≤ 0.5
-- **Failure**: Reward ≤ 0.3
-
-### Difficulty Levels
-- **Easy**: Local trips, ample budget (Expected reward: 0.90+)
-- **Medium**: Short international, medium budget (Expected: 0.80+)
-- **Hard**: Long trips, tight budget (Expected: 0.60+)
-- **Extreme**: Ultra constraints (Expected: 0.40+)
-
-## How to Analyze Results
-
-### 1. Check Overall Achievement
-Look at `dashboard.learning_objectives`:
-```python
-import json
-with open('enhanced_learning_20251029_075119.json') as f:
-    data = json.load(f)
-
-for obj, metrics in data['dashboard']['learning_objectives'].items():
-    print(f"{obj}: {metrics['current']:.3f}/{metrics['target']:.3f} ({metrics['progress']:.1f}%)")
 ```
+================================================================================
+💻 🎓 CODE GENERATION LEARNING - TIERED TEST SUMMARY
+================================================================================
 
-### 2. Analyze Category Performance
-```python
-for category, perf in data['dashboard']['category_performance'].items():
-    success_rate = perf['success'] / perf['total'] * 100
-    print(f"{category}: {success_rate:.1f}% success, avg reward {perf['avg_reward']:.3f}")
+📊 Overall Statistics:
+   Total Tests: 10
+   Passed: 10 (100.0%)
+   Failed: 0 (0.0%)
+
+🎯 Results by Difficulty Tier:
+
+   🟢 SIMPLE: 3/3 (100.0%)
+      Avg Retries: 0.00
+      Avg Reward: 0.940
+
+   🟡 MEDIUM: 4/4 (100.0%)
+      Avg Retries: 0.00
+      Avg Reward: 0.932
+
+   🔴 COMPLEX: 3/3 (100.0%)
+      Avg Retries: 0.33
+      Avg Reward: 0.895
+...
 ```
-
-### 3. Find Best Tool Order
-```python
-tool_orders = data['dashboard']['tool_order_performance']
-best = max(tool_orders.items(), key=lambda x: x[1]['avg_reward'])
-print(f"Best tool order: {best[0]} (reward: {best[1]['avg_reward']:.3f})")
-```
-
-### 4. Identify Problem Scenarios
-```python
-low_reward_results = [r for r in data['results']
-                      if r['response'].get('learning', {}).get('reward', 0) < 0.5]
-print(f"Found {len(low_reward_results)} low-reward scenarios")
-for r in low_reward_results:
-    scenario = r['scenario']
-    print(f"  - {scenario['name']}: {scenario['category']}, difficulty={scenario['expected_difficulty']}")
-```
-
-## Running New Tests
-
-### Quick Test (20 iterations)
-```bash
-python enhanced_learning_test.py --iterations 20
-```
-
-### Standard Test (50 iterations)
-```bash
-python enhanced_learning_test.py --iterations 50
-```
-
-### Full Test (100 iterations)
-```bash
-python enhanced_learning_test.py --iterations 100
-```
-
-## Files in This Directory
-
-- `enhanced_learning_YYYYMMDD_HHMMSS.json` - Full test results with all scenarios, responses, and dashboard metrics
-- Future additions may include:
-  - Visualization charts (PNG/SVG)
-  - Summary reports (TXT/MD)
-  - Comparison analyses across multiple runs
-
-## Learning Data Persistence
-
-Learning data is also saved to:
-- `data/agent_experiences.jsonl` - Experience memory (one JSON per line)
-
-This memory persists across test runs, allowing the system to improve over time through the Bandit algorithm.
-
-## Documentation
-
-For detailed information, see:
-- `ENHANCED_LEARNING_SUMMARY_EN.md` - Complete learning system documentation
-- `QUICK_START_LEARNING_EN.md` - Quick start guide
-- `ENHANCED_LEARNING_SUMMARY.md` - 中文详细文档
-- `QUICK_START_LEARNING.md` - 中文快速开始指南
 
 ---
 
-**Last Updated**: 2025-10-29
-**System Version**: Enhanced Learning v1.0
+## 🔍 Finding Results
+
+### Latest Results
+```bash
+# Code learning latest summary
+ls -t eval/code_learning_tiered_summary_*.txt | head -1
+
+# Trip learning latest summary
+ls -t eval/enhanced_learning_summary_*.txt | head -1
+
+# View latest code summary
+cat $(ls -t eval/code_learning_tiered_summary_*.txt | head -1)
+```
+
+### Results by Date
+```bash
+# All results from today
+ls eval/*_$(date +%Y%m%d)_*.txt
+
+# All code results from a specific date
+ls eval/code_learning_tiered_*_20251029_*.txt
+```
+
+### Compare Results
+```bash
+# Compare two test runs
+diff eval/code_learning_tiered_summary_20251029_120000.txt \
+     eval/code_learning_tiered_summary_20251029_130000.txt
+```
+
+---
+
+## 📈 Using Results
+
+### Share Results
+Simply send the `*_summary_*.txt` file - it contains all the important metrics in a readable format.
+
+### Analyze Trends
+Use JSON files for programmatic analysis:
+
+```python
+import json
+import glob
+
+# Load all code learning results
+results = []
+for file in glob.glob('eval/code_learning_tiered_results_*.json'):
+    with open(file) as f:
+        results.append(json.load(f))
+
+# Analyze reward trends
+avg_rewards = [sum(r['reward'] for r in run) / len(run) for run in results]
+print(f"Reward trend: {avg_rewards}")
+```
+
+### Archive Results
+```bash
+# Archive all results from a specific date
+tar -czf results_20251029.tar.gz eval/*_20251029_*
+
+# Clean old results (keep last 10 runs)
+ls -t eval/code_learning_tiered_summary_*.txt | tail -n +11 | xargs rm
+```
+
+---
+
+## 🎯 What to Look For
+
+### Code Learning (`code_learning_tiered_summary_*.txt`)
+
+**Key Metrics:**
+- **Overall Pass Rate**: Should be >90% after learning
+- **Tier Performance**:
+  - 🟢 Simple: Should have 0-1 avg retries
+  - 🟡 Medium: Should have 1-2 avg retries
+  - 🔴 Complex: Should have 2-3 avg retries
+- **Strategy Distribution**: Should match difficulty
+  - Simple → `fast_pragmatic`, `balanced`
+  - Medium → `detailed_planner`, `test_driven`
+  - Complex → `high_quality`, `test_driven`
+- **Learning Objectives**: Fast strategies for simple, quality strategies for complex
+
+### Trip Learning (`enhanced_learning_summary_*.txt`)
+
+**Key Metrics:**
+- **Learning Objectives Progress**: Should approach targets over iterations
+- **Category Performance**: All categories should have >80% success rate
+- **Top Tool Orders**: Consistent high-reward patterns should emerge
+- **Average Reward**: Should increase from ~0.65 to ~0.85
+
+---
+
+## 🧹 Maintenance
+
+### Cleanup Old Results
+```bash
+# Keep only last 30 days
+find eval/ -name "*.json" -mtime +30 -delete
+find eval/ -name "*.txt" -mtime +30 -delete
+
+# Keep only last 10 runs
+ls -t eval/code_learning_tiered_* | tail -n +21 | xargs rm
+```
+
+### Backup Important Results
+```bash
+# Backup baseline results
+mkdir -p eval/baselines
+cp eval/code_learning_tiered_summary_20251029_100000.txt eval/baselines/baseline_v1.txt
+```
+
+---
+
+## 📚 Related Documentation
+
+- **Testing Guide**: [../TESTING.md](../TESTING.md)
+- **Learning Overview**: [../docs/LEARNING_OVERVIEW.md](../docs/LEARNING_OVERVIEW.md)
+- **Trip Learning**: [../docs/TRIP_LEARNING.md](../docs/TRIP_LEARNING.md)
+- **Code Learning**: [../docs/CODE_LEARNING.md](../docs/CODE_LEARNING.md)
+
+---
+
+**Note**: All timestamps in filenames are in format `YYYYMMDD_HHMMSS` (e.g., `20251029_123456`)

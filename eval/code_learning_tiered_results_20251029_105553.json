@@ -1,0 +1,212 @@
+[
+  {
+    "test_num": 1,
+    "difficulty": "simple",
+    "tier_icon": "\ud83d\udfe2",
+    "language": "python",
+    "task": "Write a function to check if a number is even",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 7154.050827026367,
+    "total_time_s": 7.1720850467681885,
+    "strategy": "detailed_planner",
+    "reward": 0.9400000000000001,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 1.0,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 2,
+    "difficulty": "simple",
+    "tier_icon": "\ud83d\udfe2",
+    "language": "python",
+    "task": "Write a function to sum two numbers",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 6303.893327713013,
+    "total_time_s": 6.313982963562012,
+    "strategy": "detailed_planner",
+    "reward": 0.9400000000000001,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 1.0,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 3,
+    "difficulty": "simple",
+    "tier_icon": "\ud83d\udfe2",
+    "language": "python",
+    "task": "Write a function to find the maximum of three numbers",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 12556.20265007019,
+    "total_time_s": 12.567599058151245,
+    "strategy": "detailed_planner",
+    "reward": 0.9400000000000001,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 1.0,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 4,
+    "difficulty": "medium",
+    "tier_icon": "\ud83d\udfe1",
+    "language": "python",
+    "task": "Implement binary search for a sorted array",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 7379.055023193359,
+    "total_time_s": 7.390944004058838,
+    "strategy": "test_driven",
+    "reward": 0.895,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 0.7,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 5,
+    "difficulty": "medium",
+    "tier_icon": "\ud83d\udfe1",
+    "language": "python",
+    "task": "Write a function to check if a number is prime",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 7031.044721603394,
+    "total_time_s": 7.040311813354492,
+    "strategy": "high_quality",
+    "reward": 0.895,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 0.7,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 6,
+    "difficulty": "medium",
+    "tier_icon": "\ud83d\udfe1",
+    "language": "python",
+    "task": "Implement bubble sort algorithm",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 6963.51957321167,
+    "total_time_s": 6.972267150878906,
+    "strategy": "high_quality",
+    "reward": 0.895,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 0.7,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 7,
+    "difficulty": "medium",
+    "tier_icon": "\ud83d\udfe1",
+    "language": "python",
+    "task": "Calculate Fibonacci sequence up to n iteratively",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 5171.395540237427,
+    "total_time_s": 5.179957866668701,
+    "strategy": "high_quality",
+    "reward": 0.97,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 1.0,
+      "speed": 0.7
+    },
+    "error": null
+  },
+  {
+    "test_num": 8,
+    "difficulty": "complex",
+    "tier_icon": "\ud83d\udd34",
+    "language": "python",
+    "task": "Implement quicksort algorithm with in-place partitioning",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 7174.60823059082,
+    "total_time_s": 7.182896137237549,
+    "strategy": "high_quality",
+    "reward": 0.895,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 0.7,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 9,
+    "difficulty": "complex",
+    "tier_icon": "\ud83d\udd34",
+    "language": "python",
+    "task": "Implement merge sort algorithm",
+    "passed": true,
+    "retries": 0,
+    "gen_time_ms": 8001.468181610107,
+    "total_time_s": 8.010295867919922,
+    "strategy": "high_quality",
+    "reward": 0.895,
+    "learning_success": true,
+    "breakdown": {
+      "success": 1.0,
+      "efficiency": 1.0,
+      "quality": 0.7,
+      "speed": 0.4
+    },
+    "error": null
+  },
+  {
+    "test_num": 10,
+    "difficulty": "complex",
+    "tier_icon": "\ud83d\udd34",
+    "language": "python",
+    "task": "Solve the 0/1 knapsack problem using dynamic programming",
+    "passed": false,
+    "retries": 3,
+    "gen_time_ms": 32554.861545562744,
+    "total_time_s": 32.5665009021759,
+    "strategy": "balanced",
+    "reward": 0.265,
+    "learning_success": false,
+    "breakdown": {
+      "success": 0.0,
+      "efficiency": 0.3,
+      "quality": 1.0,
+      "speed": 0.4
+    },
+    "error": null
+  }
+]

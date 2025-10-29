@@ -17,10 +17,10 @@ This report outlines key design decisions and trade-offs in building an enterpri
 
 It also automatically retrieves exchange rates via API based on the departure location to convert currency units for better user experience. 
 
-I add the industry-leading feature of “context adaptation” — unsupervised online learning that improves the one-shot satisfaction rate of trip plans through continuous user interactions while saving resources.(As above example, consider a round trip from Beijing to Auckland with a budget of only $200, while it’s technically greater than $1, it’s still far beyond common sense. This is precisely the kind of case we want the model to learn from).
+I add the industry-leading feature of “context adaptation” — unsupervised online learning that improves the one-shot satisfaction rate of trip plans through continuous user interactions while saving resources.(As above example, consider a round trip from Beijing to Auckland with a budget of only $200, while it’s technically greater than $1, it’s still far beyond common sense. This is precisely the kind of case we want the model to learn from.)
 *Please refer docs/TRIP_LEARNING.md
 
-5.Code Generation is designed with the same unsupervised online learning capability, supporting automatic multi-language detection. It comes with a preinstalled Python environment for quick testing and displaying execution outputs. 
+5.Code Generation is designed with the same unsupervised online learning capability, supporting automatic multi-language detection. It comes with a preinstalled Python environment for quick testing and displaying execution outputs.（The purpose of my online reinforcement learning task is to reuse previously failed coding plans and summarize the optimal coding strategies across different tasks.） 
 *Please refer docs/CODE_LEARNING.md
 
 **Key Metrics:**

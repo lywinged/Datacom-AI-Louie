@@ -1,0 +1,67 @@
+
+================================================================================
+💻 🎓 CODE GENERATION LEARNING - TIERED TEST SUMMARY
+================================================================================
+
+📊 Overall Statistics:
+   Total Tests: 10
+   Passed: 9 (90.0%)
+   Failed: 1 (10.0%)
+
+🎯 Results by Difficulty Tier:
+
+   🟢 SIMPLE: 3/3 (100.0%)
+      Avg Retries: 0.00
+      Avg Reward: 0.940
+
+   🟡 MEDIUM: 4/4 (100.0%)
+      Avg Retries: 0.00
+      Avg Reward: 0.914
+
+   🔴 COMPLEX: 2/3 (66.7%)
+      Avg Retries: 1.00
+      Avg Reward: 0.685
+
+⏱️  Time Statistics:
+   Total Time: 100.4s (1.7 minutes)
+   Average Time per Test: 10.0s
+
+🎓 Learning Statistics:
+   Average Reward: 0.853
+   Median Reward: 0.895
+   Best Reward: 0.970
+   Worst Reward: 0.265
+
+⚡ Efficiency Statistics:
+   Average Retries: 0.30
+   First-Try Success: 9/10 (90.0%)
+
+🧠 Strategy Distribution by Tier:
+
+   🟢 SIMPLE:
+      detailed_planner: 3 (100.0%)
+
+   🟡 MEDIUM:
+      high_quality: 3 (75.0%)
+      test_driven: 1 (25.0%)
+
+   🔴 COMPLEX:
+      high_quality: 2 (66.7%)
+      balanced: 1 (33.3%)
+
+🎯 Overall Strategy Distribution:
+   high_quality: 5 times (50.0%)
+   detailed_planner: 3 times (30.0%)
+   test_driven: 1 times (10.0%)
+   balanced: 1 times (10.0%)
+
+🔤 Results by Language:
+   python: 9/10 (90.0%)
+
+🎯 Learning Objectives Check:
+   ✓ Fast strategies for simple tasks: 0/3 (0.0%)
+   ✓ Quality strategies for complex tasks: 2/3 (66.7%)
+
+================================================================================
+🎉 Tiered test suite completed!
+================================================================================

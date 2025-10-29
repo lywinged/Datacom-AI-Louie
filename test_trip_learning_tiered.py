@@ -305,36 +305,51 @@ def run_enhanced_learning_test(num_iterations: int = 50, output_dir: str = "./ev
         time.sleep(0.2)
     
     # Save results
-    results_file = output_path / f"enhanced_learning_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    results_file = output_path / f"trip_learning_tiered_result_{timestamp}.json"
+    summary_file = output_path / f"trip_learning_tiered_summary_{timestamp}.txt"
+
     with open(results_file, "w") as f:
         json.dump({"scenarios": [s.__dict__ for s in scenarios], "results": results, "dashboard": tracker.get_dashboard_data()}, f, indent=2)
-    
-    # Final report
-    print("\n" + "=" * 80)
-    print("📈 FINAL LEARNING REPORT")
-    print("=" * 80)
+
+    # Final report - collect summary lines
+    summary_lines = []
+
+    def plog(text):
+        """Print and log to summary"""
+        print(text)
+        summary_lines.append(text)
+
+    plog("\n" + "=" * 80)
+    plog("📈 FINAL LEARNING REPORT")
+    plog("=" * 80)
     dashboard_data = tracker.get_dashboard_data()
-    
-    print("\n🎯 Learning Objectives:")
+
+    plog("\n🎯 Learning Objectives:")
     for obj_name, obj_data in dashboard_data["learning_objectives"].items():
         progress = obj_data.get("progress", 0)
         current = obj_data.get("current", 0)
         target = obj_data.get("target", 0)
         status = "✅" if progress >= 100 else "🔶" if progress >= 80 else "⚠️"
-        print(f"  {status} {obj_name:30s} {current:.3f}/{target:.3f} ({progress:5.1f}%)")
-    
-    print("\n📊 Category Performance:")
+        plog(f"  {status} {obj_name:30s} {current:.3f}/{target:.3f} ({progress:5.1f}%)")
+
+    plog("\n📊 Category Performance:")
     for cat, perf in dashboard_data["category_performance"].items():
         success_rate = (perf["success"] / perf["total"] * 100) if perf["total"] > 0 else 0
-        print(f"  {cat:25s} | Tests:{perf['total']:3d} | Success:{success_rate:5.1f}% | Reward:{perf['avg_reward']:.3f}")
-    
-    print("\n🔧 Top Tool Orders:")
+        plog(f"  {cat:25s} | Tests:{perf['total']:3d} | Success:{success_rate:5.1f}% | Reward:{perf['avg_reward']:.3f}")
+
+    plog("\n🔧 Top Tool Orders:")
     sorted_tools = sorted(dashboard_data["tool_order_performance"].items(), key=lambda x: -x[1]["avg_reward"])
     for i, (tool_order, perf) in enumerate(sorted_tools[:5], 1):
-        print(f"  {i}. {tool_order:40s} | Count:{perf['count']:3d} | Reward:{perf['avg_reward']:.3f}")
-    
-    print(f"\n✅ Results saved to {results_file}")
-    print("=" * 80)
+        plog(f"  {i}. {tool_order:40s} | Count:{perf['count']:3d} | Reward:{perf['avg_reward']:.3f}")
+
+    plog(f"\n✅ Results saved to {results_file}")
+    plog(f"✅ Summary saved to {summary_file}")
+    plog("=" * 80)
+
+    # Save summary to file
+    with open(summary_file, "w") as f:
+        f.write("\n".join(summary_lines))
     
     return results, tracker
 
