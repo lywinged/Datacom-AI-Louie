@@ -65,7 +65,7 @@ if [[ -f "$DATA_ZIP" ]]; then
     exit 1
   fi
 
-  # 清理并解压到临时目录
+  # Clean and extract to temp directory
   rm -rf "$DATA_DIR"
   mkdir -p "$DATA_DIR"
   TMP_DIR="$(mktemp -d)"
@@ -74,11 +74,11 @@ if [[ -f "$DATA_ZIP" ]]; then
     exit 1
   fi
 
-  # 移除 macOS 垃圾文件
+  # Remove macOS junk files
   find "$TMP_DIR" -name "__MACOSX" -type d -prune -exec rm -rf {} + || true
   find "$TMP_DIR" -name ".DS_Store" -type f -delete || true
 
-  # 扁平化：把顶层目录的“内容”合并到 data/，顶层文件直接移入
+  # Flatten: merge top-level directory contents into data/, move top-level files directly
   shopt -s dotglob nullglob
   for entry in "$TMP_DIR"/*; do
     if [[ -d "$entry" ]]; then
