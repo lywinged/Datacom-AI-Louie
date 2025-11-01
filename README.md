@@ -4,7 +4,7 @@ Enterprise-grade AI platform with Chat, RAG, Agent, and Code Assistant capabilit
 
 ### Quick Start (Docker - Recommended)
 
-I add my api-key into .env for smooth UX.
+(Welcome to refer my code, but cite it.😉）
 
 🌟🌟🌟🌟🌟🌟🌟🌟 
 
