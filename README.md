@@ -459,11 +459,6 @@ ls -lh models/minilm-*/
 - **[TESTS_UPDATED.md](TESTS_UPDATED.md)** - Test update summary
 - **[CI_CD_READY.md](CI_CD_READY.md)** - CI/CD configuration details
 
-## Contributing and Credit
-
-1. Great assessment from Datacom
-2. My old projects
-3. Claude CODE & CODEX
 
 
 ## License
